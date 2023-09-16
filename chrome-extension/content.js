@@ -16,6 +16,7 @@ function checkLoginStatus() {
     chrome.storage.sync.get("extension_user_id", function (data) {
       console.log("extension_user_id: " + data.extension_user_id);
     });
+
     // IF WE ARE ON THE DASHBOARD PAGE AFTER LOGGING IN
     if (userId) {
       // read the key from local storage
@@ -28,7 +29,7 @@ function checkLoginStatus() {
       // try to read the key from extension storage
       chrome.storage.sync.get("extension_user_id", function (data) {
         if (data.extension_user_id) {
-          // alert("Sending page info to server");
+          alert("Sending page info to server");
           fetch("http://localhost:3000/api/testApi", {
             method: "POST",
             headers: {
@@ -54,7 +55,7 @@ function checkLoginStatus() {
             });
         } else {
           // redirect to login page
-          if (pageBody.includes("continue to FocusGuard")) {
+          if (pageUrl.includes("http://localhost:3000")) {
             return;
           } else {
             window.location.href = "http://localhost:3000/sign-in";
