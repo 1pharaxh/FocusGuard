@@ -60,8 +60,52 @@ export async function AddToDatabase(
   // check if collection exists
   const exsits = await collection.findOne({ userId: userId });
   if (exsits) {
-    console.log("Collection exists");
+    // check for the page_title and get the recent most documents with page_title
+    // if page title don't exist, add it to database, follow the steps
+    //          1. get the category from AI
+    //          2. if the category is Others, add a key value pair allowed: true, else add allowed: false
+    //          3. add a date key value pair, for sorting the query by latest date
+    //          4. add a key value pair page_title: page_title
+    //          5. add a key value pair categories: categories
+    //          6. add a key value pair category : category
+    //          7. add a key value pair userId: userId
   } else {
+    // if it does not exist, create a new collection
+    //          1. create a new collection with userId
+
+    //          2. add a document to it
+    //          1. get the category from AI
+    //          2. if the category is Others, add a key value pair allowed: true, else add allowed: false
+    //          3. add a date key value pair, for sorting the query by latest date
+    //          4. add a key value pair page_title: page_title
+    //          5. add a key value pair categories: categories
+    //          6. add a key value pair category : category
+    //          7. add a key value pair userId: userId
     console.log("Collection does not exist");
   }
+}
+
+export async function AddDataToDocument(
+  userId: string,
+  page_title: string,
+  categories: string[],
+  url: string,
+  category: string
+) {
+  const db = await connectToDatabase();
+  const database = db.db("data");
+  const collection = database.collection(userId);
+  // construct the document
+  const document = {
+    allowed: category === "Others" ? true : false,
+    date: new Date(),
+    page_title: page_title,
+    categories: categories,
+    category: category,
+    userId: userId,
+    url: url,
+  };
+
+  // add the document to the collection
+  collection.insertOne(document);
 }
