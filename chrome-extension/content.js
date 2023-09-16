@@ -29,7 +29,7 @@ function checkLoginStatus() {
       // try to read the key from extension storage
       chrome.storage.sync.get("extension_user_id", function (data) {
         if (data.extension_user_id) {
-          alert("Sending page info to server");
+          // alert("Sending page info to server");
           fetch("http://localhost:3000/api/testApi", {
             method: "POST",
             headers: {
