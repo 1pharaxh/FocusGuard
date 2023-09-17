@@ -40,6 +40,22 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import {
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+const Dialog = dynamic(
+  () => import("@/components/ui/dialog").then((mod) => mod.Dialog),
+  {
+    ssr: false,
+  }
+);
 const AlertDialog = dynamic(
   () => import("@/components/ui/alert-dialog").then((mod) => mod.AlertDialog),
   {
@@ -101,7 +117,6 @@ export default function Home() {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const data = await res.json();
-        console.log(data);
         if (data.exists === false) {
           const btn = document.getElementById("triggerBtn");
           btn?.click();
@@ -333,28 +348,15 @@ export default function Home() {
                           <Overview />
                         </CardContent>
                       </Card>
-                      <Card
-                        className="
+                      {userId && (
+                        <Card
+                          className="
                    md:col-span-1
                   lg:col-span-3"
-                      >
-                        <CardHeader>
-                          <div className="w-full flex items-center justify-between">
-                            <div className="flex flex-col gap-1">
-                              <CardTitle>Add a new category</CardTitle>
-                              <CardDescription>
-                                Add new distractions categories to your list.
-                              </CardDescription>
-                            </div>
-                            <Button variant="outline" size="icon">
-                              <PlusIcon />
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          {userId && <RecentSales userId={userId} />}
-                        </CardContent>
-                      </Card>
+                        >
+                          <RecentSales userId={userId} />
+                        </Card>
+                      )}
                     </div>
                   </TabsContent>
 
