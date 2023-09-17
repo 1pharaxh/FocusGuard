@@ -4,6 +4,7 @@ import { UserButton } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@radix-ui/react-icons";
+
 import {
   Bar,
   BarChart,
@@ -12,6 +13,39 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Overview } from "@/components/ui/overview";
+import { RecentSales } from "@/components/ui/recent-sales";
+import { AnalyticsTLineGraph } from "@/components/ui/analyticstlinegraph";
+import { AnalyticsStackedGraph } from "@/components/ui/analyticstackedgraph";
+import { AnalyticsLineGraph } from "@/components/ui/analyticslinegraph";
+import { AnalyticsTable } from "@/components/ui/analyticstable";
+import React from "react";
+import dynamic from "next/dynamic";
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+const AlertDialog = dynamic(
+  () => import("@/components/ui/alert-dialog").then((mod) => mod.AlertDialog),
+  {
+    ssr: false,
+  }
+);
 const data = [
   {
     revenue: 10400,
@@ -46,35 +80,60 @@ const data = [
     subscription: 189,
   },
 ];
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Overview } from "@/components/ui/overview";
-import { RecentSales } from "@/components/ui/recent-sales";
-import { AnalyticsTLineGraph } from "@/components/ui/analyticstlinegraph";
-import { AnalyticsStackedGraph } from "@/components/ui/analyticstackedgraph";
-import { AnalyticsLineGraph } from "@/components/ui/analyticslinegraph";
-import { AnalyticsTable } from "@/components/ui/analyticstable";
-
 export default function Home() {
-  const { isLoaded, userId, sessionId, getToken } = useAuth();
+  const { isLoaded, userId } = useAuth();
   const { isSignedIn, user } = useUser();
-  // In case the user signs out while on the page.
-  if (!isLoaded || !userId || !isSignedIn) {
-    return null;
-  }
+  const fetchData = async () => {
+    if (isLoaded && userId && isSignedIn) {
+      localStorage.setItem("user_id", userId);
+      try {
+        const res = await fetch(`/api/checkCategory`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ extension_user_id: userId }),
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        console.log(data);
+        if (data.exists === false) {
+          const btn = document.getElementById("triggerBtn");
+          btn?.click();
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    }
+  };
   // if user is signed in, add a key user_id to the local storage with the value of the user id
-  if (isSignedIn) {
-    localStorage.setItem("user_id", userId);
-  }
+  React.useEffect(() => {
+    fetchData();
+  }, [isLoaded, userId, isSignedIn]);
 
   return (
     <main className="flex w-full items-center justify-center">
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button id="triggerBtn"></button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Add your first category !🤗</AlertDialogTitle>
+            <AlertDialogDescription>
+              To get started, add your first category. This will help you to
+              track your productivity.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <>
         <div className=" flex-col flex w-full max-w-7xl">
           <div className="flex-1 space-y-4 p-8 pt-6">
@@ -83,7 +142,7 @@ export default function Home() {
                 Dashboard
                 <br />
                 <span className="text-sm font-medium">
-                  Hello, {user.firstName} welcome to Focus Guard
+                  Hello, {user?.firstName} welcome to Focus Guard
                 </span>
               </h2>
 

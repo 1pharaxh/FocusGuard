@@ -4,6 +4,7 @@ import {
   EditCategories,
   CheckIfCollectionExists,
   GetData,
+  CheckIfCategoriesExist,
 } from "@/lib";
 // IMPORTANT: THIS IS HOW YOU MAKE AN API : https://www.youtube.com/watch?v=O-NGENb6LNg
 export const GET = async (req: Request, res: Response) => {
@@ -15,12 +16,6 @@ export const POST = async (req: Request, res: Response) => {
   if (!body) {
     return NextResponse.json({ message: "no body!" });
   }
-  const print = await GetData(body.extension_user_id);
-  console.log(print);
-  const category = await AddToDatabase(
-    body.extension_user_id,
-    body.page_title,
-    body.page_url
-  );
-  return NextResponse.json({ hasCategory: category });
+  const returnData = await CheckIfCategoriesExist(body.extension_user_id);
+  return NextResponse.json({ exists: returnData });
 };

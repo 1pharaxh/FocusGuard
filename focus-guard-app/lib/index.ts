@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 
 import { MongoClient } from "mongodb";
+import { currentUser } from "@clerk/nextjs";
 
 const uri = process.env.NEXT_PUBLIC_MONGODB_URI; // Connection string from MongoDB Atlas
 
@@ -227,4 +228,26 @@ export async function GetData(userId: string) {
     .toArray();
 
   return documents;
+}
+
+// This function is responsbile for checking if categories exist for a user, in database, if they do, then return true, else return false
+export async function CheckIfCategoriesExist(userId: string) {
+  const collection = await CheckIfCollectionExists(userId);
+  const doc = await collection.findOne({
+    CurrentCategories: { $exists: true },
+    AllCategories: { $exists: true },
+  });
+
+  if (
+    doc &&
+    doc.userId &&
+    doc.CurrentCategories &&
+    doc.AllCategories &&
+    doc.currentUser &&
+    doc.AllCategories.length > 1
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 }
