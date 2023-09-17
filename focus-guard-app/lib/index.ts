@@ -80,6 +80,29 @@ export async function CheckIfCollectionExists(userId: any) {
   }
 }
 
+export async function EditCategories(userId: any, categories: string[]) {
+  const collection = await CheckIfCollectionExists(userId);
+  // AllCategories would get the new categoreis appened to it AND categoreis would be set to the new categories AND Others would be pushed to the end
+  const doc = await collection.findOne();
+  const AllCategories = doc?.AllCategories;
+  let CurrentCategories = categories;
+  CurrentCategories.push("Others");
+  const Others = AllCategories?.filter(
+    (category: string) => !CurrentCategories.includes(category)
+  );
+  const newCategories = CurrentCategories.concat(Others);
+
+  const document = {
+    userId: userId,
+    CurrentCategories: CurrentCategories,
+    AllCategories: newCategories,
+    updatedOn: new Date(),
+  };
+  // Add the document to the collection
+  await collection.insertOne(document);
+  return document;
+}
+
 // This is function that accepts, userId: a string, page_title: a string, category: a list of strings
 export async function AddToDatabase(
   userId: any,
@@ -88,16 +111,18 @@ export async function AddToDatabase(
   categories: string[]
 ): Promise<string> {
   const collection = await CheckIfCollectionExists(userId);
-  // find the page title document sort by date, get the latest one
   // Find the document with the given page title, sorted by date
-  const doc: any = collection
+  const doc: any = await collection
     .find({ page_title: page_title })
     .sort({ date: -1 })
     .limit(1)
     .toArray();
+
   // If the document is found
-  if (doc) {
+  if (doc.length > 0) {
+    console.log(doc);
     console.log("Document found");
+
     // Compare the 'CurrentCategories' from the document with the 'categories' array
     const match = doc.CurrentCategories.some((category: any) =>
       categories.includes(category)

@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  connectToDatabase,
-  SendToAI,
-  AddToDatabase,
-  CheckIfCollectionExists,
-} from "@/lib";
+import { AddToDatabase, EditCategories, CheckIfCollectionExists } from "@/lib";
 // IMPORTANT: THIS IS HOW YOU MAKE AN API : https://www.youtube.com/watch?v=O-NGENb6LNg
 export const GET = async (req: Request, res: Response) => {
   return NextResponse.json({ message: "Hello from the API!" });
@@ -21,6 +16,8 @@ export const POST = async (req: Request, res: Response) => {
   //   "Other",
   // ]);
   // console.log(body.page_title + "-", category);
+  EditCategories(body.extension_user_id, ["Gaming"]);
+
   CheckIfCollectionExists(body.extension_user_id);
 
   const category = await AddToDatabase(
