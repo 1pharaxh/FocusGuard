@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -9,58 +10,67 @@ import {
   Tooltip,
 } from "recharts";
 
-const data = [
-  {
-    name: "Jan",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Feb",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Mar",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Apr",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "May",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Jun",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Jul",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Aug",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Sep",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Oct",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Nov",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Dec",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-];
+export function OverviewProductivityBigChart({ userId }: { userId: string }) {
+  const [data, setData] = useState([
+    {
+      productivityScore: 12,
+      name: "Mon",
+    },
+    {
+      productivityScore: 2,
+      name: "Tue",
+    },
+    {
+      productivityScore: 13,
+      name: "Wed",
+    },
+    {
+      productivityScore: 2,
+      name: "Thu",
+    },
+    {
+      productivityScore: 5,
+      name: "Fri",
+    },
+    {
+      productivityScore: 7,
+      name: "Sat",
+    },
+    // Add new data point from api here
+  ]);
 
-export function OverviewProductivityBigChart() {
+  const fetchData = async () => {
+    if (userId) {
+      try {
+        const res = await fetch(`/api/productivityScore`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({ extension_user_id: userId, date: new Date() }),
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        if (data.others && data.notOthers) {
+          setData((prevData) => [
+            ...prevData,
+            {
+              productivityScore: data.others,
+              name: "Sun",
+            },
+          ]);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, [userId]);
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>
@@ -76,9 +86,9 @@ export function OverviewProductivityBigChart() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          // tickFormatter={(value) => `$${value}`}
         />
-        <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="productivityScore" fill="#adfa1d" radius={[4, 4, 0, 0]} />
         <Tooltip
           cursor={{ fill: "transparent" }}
           contentStyle={{
@@ -88,8 +98,8 @@ export function OverviewProductivityBigChart() {
             borderRadius: "8px",
             zIndex: 9999,
           }}
-          formatter={(value) => [`$${value}`, "Total"]}
-          labelFormatter={(label) => `Month of ${label}`}
+          formatter={(value) => [`Score: ${value}`]}
+          labelFormatter={(label) => `Day: ${label}`}
         />
       </BarChart>
     </ResponsiveContainer>

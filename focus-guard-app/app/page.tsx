@@ -149,7 +149,8 @@ export default function Home() {
                         <CardContent>
                           <div className="text-2xl font-bold">+2350</div>
                           <p className="text-xs text-muted-foreground">
-                            +180.1% from last month
+                            This score is the average of your last 7 days
+                            distraction score
                           </p>
                           {userId && (
                             <OverviewTinyProductivityChart userId={userId} />
@@ -227,7 +228,9 @@ export default function Home() {
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="pl-2">
-                          <OverviewProductivityBigChart />
+                          {userId && (
+                            <OverviewProductivityBigChart userId={userId} />
+                          )}
                         </CardContent>
                       </Card>
                       {userId && (

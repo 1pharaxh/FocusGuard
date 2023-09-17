@@ -1,39 +1,59 @@
-const data = [
-  {
-    revenue: 10400,
-    subscription: 240,
-  },
-  {
-    revenue: 14405,
-    subscription: 300,
-  },
-  {
-    revenue: 9400,
-    subscription: 200,
-  },
-  {
-    revenue: 8200,
-    subscription: 278,
-  },
-  {
-    revenue: 7000,
-    subscription: 189,
-  },
-  {
-    revenue: 9600,
-    subscription: 239,
-  },
-  {
-    revenue: 11244,
-    subscription: 278,
-  },
-  {
-    revenue: 26475,
-    subscription: 189,
-  },
-];
+import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip } from "recharts";
 export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
+  const [data, setData] = useState([
+    {
+      productivityScore: 12,
+    },
+    {
+      productivityScore: 2,
+    },
+    {
+      productivityScore: 13,
+    },
+    {
+      productivityScore: 2,
+    },
+    {
+      productivityScore: 5,
+    },
+    {
+      productivityScore: 7,
+    },
+    // Add a new data point from api here
+  ]);
+  const fetchData = async () => {
+    if (userId) {
+      try {
+        const res = await fetch(`/api/productivityScore`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({ extension_user_id: userId, date: new Date() }),
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        if (data.others && data.notOthers) {
+          setData((prevData) => [
+            ...prevData,
+            {
+              productivityScore: data.others,
+            },
+          ]);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, [userId]);
+
   return (
     <div className="h-[80px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -49,7 +69,7 @@ export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
           <Line
             type="monotone"
             strokeWidth={2}
-            dataKey="revenue"
+            dataKey="productivityScore"
             activeDot={{
               r: 6,
               style: {
@@ -76,6 +96,7 @@ export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
             itemStyle={{
               color: "#659D0A",
             }}
+            formatter={(value) => [`${value}`, "Points"]}
             labelFormatter={(label) => ``}
           />
         </LineChart>

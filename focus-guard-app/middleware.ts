@@ -11,6 +11,7 @@ export default authMiddleware({
     "/delete-user-key",
     "/api/checkCategory",
     "/api/viewEditCategory",
+    "api/productivityScore",
   ],
 });
 
