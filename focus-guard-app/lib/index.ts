@@ -230,7 +230,7 @@ export async function GetData(userId: string) {
   return documents;
 }
 
-// This function is responsbile for checking if categories exist for a user, in database, if they do, then return true, else return false
+// DONE✅ function is responsbile for checking if categories exist for a user, in database, if they do, then return true, else return false
 export async function CheckIfCategoriesExist(userId: string) {
   const collection = await CheckIfCollectionExists(userId);
   const doc = await collection.findOne({
@@ -248,5 +248,19 @@ export async function CheckIfCategoriesExist(userId: string) {
     return true;
   } else {
     return false;
+  }
+}
+
+// DONE✅ this function is responsbile for getting the current categories of a user
+export async function GetCurrentCategories(userId: string) {
+  const collection = await CheckIfCollectionExists(userId);
+  const doc = await collection.findOne({
+    CurrentCategories: { $exists: true },
+    AllCategories: { $exists: true },
+  });
+  if (doc && doc.CurrentCategories) {
+    return doc.CurrentCategories;
+  } else {
+    return [];
   }
 }
