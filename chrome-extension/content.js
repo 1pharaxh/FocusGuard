@@ -55,7 +55,7 @@ function checkLoginStatus() {
             });
         } else {
           // redirect to login page
-          if (pageUrl.includes("http://localhost:3000")) {
+          if (pageUrl.includes("http://localhost:3000") || pageUrl.includes("https://accounts.google.com/o/oauth2/auth/oauthchooseaccount")) {
             return;
           } else {
             window.location.href = "http://localhost:3000/sign-in";
