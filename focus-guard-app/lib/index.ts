@@ -243,7 +243,6 @@ export async function CheckIfCategoriesExist(userId: string) {
     doc.userId &&
     doc.CurrentCategories &&
     doc.AllCategories &&
-    doc.currentUser &&
     doc.AllCategories.length > 1
   ) {
     return true;
