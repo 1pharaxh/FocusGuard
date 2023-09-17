@@ -128,11 +128,12 @@ export async function AddToDatabase(
     console.log("Document found");
 
     // Compare the 'CurrentCategories' from the document with the 'categories' array
-    const match = doc_template.CurrentCategories.some((category: any) =>
-      categories.includes(category)
-    );
+    // const match = doc_template.CurrentCategories.some((category: any) =>
+    //   categories.includes(category)
+    // );
     // If a match is found, return 'BLOCK', else return 'ALLOW'
-    return match ? "BLOCK" : "ALLOW";
+    // return match && doc.category !== "Others" ? "BLOCK" : "ALLOW";
+    return doc.category;
   } else {
     const categories = doc_template.CurrentCategories;
     const category = await SendToAI(page_title, categories);
@@ -144,7 +145,7 @@ export async function AddToDatabase(
       category,
       collection
     );
-    return category === "Others" ? "ALLOW" : "BLOCK";
+    return category;
   }
 }
 
