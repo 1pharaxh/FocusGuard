@@ -55,25 +55,27 @@ export async function SendToAI(
 export async function CheckIfCollectionExists(userId: any) {
   const db = await connectToDatabase();
   const database = db.db("data");
-  // find a collection of userId, // if it does not exists, then create it, else return
+
+  // Find a collection of userId, if it does not exist, then create it, else return
   const collection = database.collection(userId);
-  // check if collection has any document in it
+
+  // Check if collection has any document in it
   const doc = await collection.findOne();
   if (doc) {
-    console.log("Collection exists");
     return collection;
   } else {
-    // create a collection
-    database.createCollection(userId);
+    // Create a collection
+    await database.createCollection(userId);
     const document = {
       userId: userId,
       CurrentCategories: ["Others"],
       AllCategories: ["Others"],
       updatedOn: new Date(),
     };
-    // add the document to the collection
+
+    // Add the document to the collection
     const collectionNew = database.collection(userId);
-    collectionNew.insertOne(document);
+    await collectionNew.insertOne(document);
     return collectionNew;
   }
 }
@@ -95,6 +97,7 @@ export async function AddToDatabase(
     .toArray();
   // If the document is found
   if (doc) {
+    console.log("Document found");
     // Compare the 'CurrentCategories' from the document with the 'categories' array
     const match = doc.CurrentCategories.some((category: any) =>
       categories.includes(category)
