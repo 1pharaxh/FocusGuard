@@ -5,7 +5,7 @@ import { MongoClient } from "mongodb";
 const uri = process.env.NEXT_PUBLIC_MONGODB_URI; // Connection string from MongoDB Atlas
 
 let cachedDb: MongoClient;
-// Function that connects to the database and returns the cached database connection
+// DONE✅ Function that connects to the database and returns the cached database connection
 export async function connectToDatabase() {
   if (!uri) {
     throw new Error("Please define the MONGODB_URI environment variable");
@@ -21,12 +21,23 @@ export async function connectToDatabase() {
   console.log("Connected to MongoDB");
   return cachedDb;
 }
+let lastCall = 0;
 
-// This is the function that gets a string and returns the category of the string
+// DONE✅ This is the function that gets a string and returns the category of the string
 export async function SendToAI(
   text: String,
   categories: String[]
 ): Promise<string> {
+  const now = Date.now();
+  if (now - lastCall < 20000) {
+    console.log("Waiting for 20 seconds before next call...");
+    await new Promise((resolve) =>
+      setTimeout(resolve, 20000 - (now - lastCall))
+    );
+  }
+
+  lastCall = Date.now();
+
   const openai = new OpenAI({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // This is also the default, can be omitted
   });
@@ -38,7 +49,7 @@ export async function SendToAI(
       {
         role: "user",
         content:
-          "You can only reply with one of the following answers: " +
+          "You can only reply with one of the following answers, Never reply with any other answer apart from these: " +
           JSON.stringify(categories) +
           ", how would you categorize the following title: '" +
           text +
@@ -46,12 +57,16 @@ export async function SendToAI(
       },
     ],
   });
+  console.log(
+    "MESSAGE: got AI response",
+    text + " - " + chatCompletion.choices[0].message.content
+  );
   return chatCompletion.choices[0].message.content !== null
     ? chatCompletion.choices[0].message.content
     : "Others";
 }
 
-// Responsible for checking if collection of user Id exists, if it does, then reutnr collection else create collection and return the new one
+// DONE✅ Responsible for checking if collection of user Id exists, if it does, then return collection else create collection and return the new one
 export async function CheckIfCollectionExists(userId: any) {
   const db = await connectToDatabase();
   const database = db.db("data");
@@ -80,6 +95,8 @@ export async function CheckIfCollectionExists(userId: any) {
   }
 }
 
+// DONE✅ This is the function that accepts, userId: a string, categories: a list of strings, and replaces the current categories and adds the new categories
+// to the end of all categories.
 export async function EditCategories(userId: any, categories: string[]) {
   const collection = await CheckIfCollectionExists(userId);
   // AllCategories would get the new categories appended to it AND categories would be set to the new categories AND Others would be pushed to the end
@@ -98,57 +115,13 @@ export async function EditCategories(userId: any, categories: string[]) {
     AllCategories: newCategories,
     updatedOn: new Date(),
   };
-
   // Replace the existing document
   await collection.updateOne({ userId: userId }, { $set: document });
-
   return document;
 }
 
-// This is function that accepts, userId: a string, page_title: a string, category: a list of strings
-export async function AddToDatabase(
-  userId: any,
-  page_title: string,
-  url: string,
-  categories: string[]
-): Promise<string> {
-  const collection = await CheckIfCollectionExists(userId);
-  // Find the document with the given page title, sorted by date
-  const doc: any = await collection
-    .find({ page_title: page_title })
-    .sort({ date: -1 })
-    .limit(1)
-    .toArray();
-
-  const doc_template: any = await collection.findOne({});
-
-  // If the document is found
-  if (doc.length > 0) {
-    console.log(doc);
-    console.log("Document found");
-
-    // Compare the 'CurrentCategories' from the document with the 'categories' array
-    // const match = doc_template.CurrentCategories.some((category: any) =>
-    //   categories.includes(category)
-    // );
-    // If a match is found, return 'BLOCK', else return 'ALLOW'
-    // return match && doc.category !== "Others" ? "BLOCK" : "ALLOW";
-    return doc.category;
-  } else {
-    const categories = doc_template.CurrentCategories;
-    const category = await SendToAI(page_title, categories);
-    AddDataToDocument(
-      userId,
-      page_title,
-      categories,
-      url,
-      category,
-      collection
-    );
-    return category;
-  }
-}
-
+// DONE✅ This is the function that accepts, userId: a string, page_title: a string, categories: a list of strings, and URL: a string
+// It then adds the page_title, categories, and URL to the database
 export async function AddDataToDocument(
   userId: string,
   page_title: string,
@@ -169,4 +142,70 @@ export async function AddDataToDocument(
 
   // add the document to the collection
   collection.insertOne(document);
+}
+
+// This is function that accepts, userId: a string, page_title: a string, and URL: a string
+// It then checks the database for the page_title, if it exists, then it checks if the category of the page_title is in
+// the current categories, if it is, then it returns the category else it sends the page_title to the AI and gets a category for the title
+// and adds the page_title, category, and URL to the database and returns the category
+export async function AddToDatabase(
+  userId: any,
+  page_title: string,
+  url: string
+): Promise<string> {
+  const collection = await CheckIfCollectionExists(userId);
+  // Find the document with the given url,  sort it by latest date, and limit it to 1
+  const doc: any = await collection
+    .find({ url: url })
+    .sort({ date: -1 })
+    .limit(1)
+    .toArray();
+
+  const doc_template: any = await collection.findOne({
+    CurrentCategories: { $exists: true },
+    AllCategories: { $exists: true },
+  });
+  // If the document is found
+  if (doc.length > 0) {
+    console.log("MESSAGE: found document");
+    // If the document has the category in the current categories, then return the category
+    if (doc_template.CurrentCategories.includes(doc[0].category)) {
+      console.log(
+        "MESSAGE: found document CATEGORY, RETURNING ",
+        doc[0].category
+      );
+      return doc[0].category;
+    } else {
+      console.log(
+        "MESSAGE: DID NOT FIND document CATEGORY -",
+        doc_template.CurrentCategories,
+        doc[0].category
+      );
+      const categories = doc_template.CurrentCategories;
+      const category = await SendToAI(page_title, categories);
+      AddDataToDocument(
+        userId,
+        page_title,
+        categories,
+        url,
+        category,
+        collection
+      );
+      console.log("MESSAGE: ADDED TO DATABASE, RETURNING CATEGORY ", category);
+      return category;
+    }
+  } else {
+    console.log("MESSAGE: DID NOT FIND URL");
+    const categories = doc_template.CurrentCategories;
+    const category = await SendToAI(page_title, categories);
+    AddDataToDocument(
+      userId,
+      page_title,
+      categories,
+      url,
+      category,
+      collection
+    );
+    return category;
+  }
 }

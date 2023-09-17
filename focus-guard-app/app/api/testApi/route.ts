@@ -18,13 +18,10 @@ export const POST = async (req: Request, res: Response) => {
   // console.log(body.page_title + "-", category);
 
   CheckIfCollectionExists(body.extension_user_id);
-  EditCategories(body.extension_user_id, ["Gaming", "Politcal News"]);
-
   const category = await AddToDatabase(
     body.extension_user_id,
     body.page_title,
-    body.page_url,
-    ["Gaming", "Politcal News", "Other"]
+    body.page_url
   );
   return NextResponse.json({ category: category });
 };
