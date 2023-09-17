@@ -32,7 +32,7 @@ export async function SendToAI(
   if (now - lastCall < 20000) {
     console.log("Waiting for 20 seconds before next call...");
     await new Promise((resolve) =>
-      setTimeout(resolve, 20000 - (now - lastCall))
+      setTimeout(resolve, 10000 - (now - lastCall))
     );
   }
 
@@ -144,7 +144,7 @@ export async function AddDataToDocument(
   await collection.insertOne(document);
 }
 
-// This is function that accepts, userId: a string, page_title: a string, and URL: a string
+// DONE✅ This is function that accepts, userId: a string, page_title: a string, and URL: a string
 // It then checks the database for the page_title, if it exists, then it checks if the category of the page_title is in
 // the current categories, if it is, then it returns the category else it sends the page_title to the AI and gets a category for the title
 // and adds the page_title, category, and URL to the database and returns the category
@@ -209,4 +209,22 @@ export async function AddToDatabase(
     );
     return category;
   }
+}
+
+// DONE✅ This is the function that accepts, userId: a string, and returns all the documents in the collection
+// except for the one with 'CurrentCategories' and 'AllCategories'
+export async function GetData(userId: string) {
+  const collection = await CheckIfCollectionExists(userId);
+
+  // send all the documents in the collection except for the one with 'CurrentCategories' and 'AllCategories'
+  const documents = await collection
+    .find({
+      $nor: [
+        { CurrentCategories: { $exists: true } },
+        { AllCategories: { $exists: true } },
+      ],
+    })
+    .toArray();
+
+  return documents;
 }
