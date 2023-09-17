@@ -46,42 +46,84 @@ const data: Payment[] = [
     amount: 316,
     status: "success",
     email: "ken99@yahoo.com",
+
+    pageurl: "https://www.google.com",
+    pagetitle: "Google",
+    allowed: "Yes",
+    category: "Others",
+    date: "2021-09-01",
   },
   {
     id: "3u1reuv4",
     amount: 242,
     status: "success",
     email: "Abe45@gmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
   {
     id: "derv1ws0",
     amount: 837,
     status: "processing",
     email: "Monserrat44@gmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
   {
     id: "5kma53ae",
     amount: 874,
     status: "success",
     email: "Silas22@gmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
   {
     id: "bhqecj4p",
     amount: 721,
     status: "failed",
     email: "carmella@hotmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
   {
     id: "bhqecjd4p",
     amount: 721,
     status: "success",
     email: "sasd@hotmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
   {
     id: "bhqe222cjd4p",
     amount: 721,
     status: "success",
     email: "sasd@hotmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
 
   {
@@ -89,24 +131,48 @@ const data: Payment[] = [
     amount: 221,
     status: "success",
     email: "sasd@hotmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
   {
     id: "bh2qecjd4p",
     amount: 721,
     status: "success",
     email: "sasd@hotmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
   {
     id: "bhq21ecjd4p",
     amount: 721,
     status: "success",
     email: "sasd@hotmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
   {
     id: "b21hqecjd4p",
     amount: 721,
     status: "success",
     email: "sasd@hotmail.com",
+
+    pageurl: "https://www.acme.com",
+    pagetitle: "Your daily politics | Acme",
+    allowed: "No",
+    category: "Politics",
+    date: "2021-09-01",
   },
 ];
 
@@ -115,6 +181,12 @@ export type Payment = {
   amount: number;
   status: "pending" | "processing" | "success" | "failed";
   email: string;
+  pageurl?: string;
+  pagetitle?: string;
+  allowed?: string;
+  date?: string;
+  category?: string;
+  time?: string;
 };
 
 export const columns: ColumnDef<Payment>[] = [
@@ -137,42 +209,50 @@ export const columns: ColumnDef<Payment>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
+    accessorKey: "pagetitle",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Title
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue("pagetitle")}</div>
+    ),
+  },
+
+  {
+    accessorKey: "allowed",
+    header: "Allowed",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("allowed")}</div>
+    ),
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
+    accessorKey: "pageurl",
+    header: "URL",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("pageurl")}</div>
+    ),
+  },
+  {
+    accessorKey: "category",
+    header: "Category",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("category")}</div>
+    ),
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("date")}</div>,
   },
   {
     id: "actions",
@@ -193,11 +273,12 @@ export const columns: ColumnDef<Payment>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(payment.id)}
             >
-              Copy payment ID
+              {/* FIX THIS  */}
+              Delete
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator />
             <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>View payment details</DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -237,10 +318,12 @@ export function AnalyticsTable() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter titles..."
+          value={
+            (table.getColumn("pagetitle")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("pagetitle")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
