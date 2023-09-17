@@ -157,7 +157,7 @@ export async function AddToDatabase(
   // Find the document with the given url,  sort it by latest date, and limit it to 1
   // Check if the data already exists in the database
   const existingDoc: any = await collection
-    .find({ url: url, page_title: page_title })
+    .find({ url: url })
     .sort({ date: -1 })
     .limit(1)
     .toArray();
