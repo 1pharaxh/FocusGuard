@@ -66,13 +66,13 @@ const CustomTooltip = ({
         <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col">
             <span className="text-[0.70rem] uppercase text-muted-foreground">
-              Average
+              Fortnite Videos
             </span>
             <span className="font-bold ">{payload[0].value}</span>
           </div>
           <div className="flex flex-col">
             <span className="text-[0.70rem] uppercase text-muted-foreground">
-              Today
+              Political News
             </span>
             <span className="font-bold text-muted-foreground">
               {payload[1].value}
@@ -80,7 +80,7 @@ const CustomTooltip = ({
           </div>
           <div className="flex flex-col">
             <span className="text-[0.70rem] uppercase text-muted-foreground">
-              Cat3
+              Posts from Ryan
             </span>
             <span className="font-bold">{payload[2].value}</span>
           </div>
@@ -113,7 +113,7 @@ export function AnalyticsTLineGraph() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          // tickFormatter={(value) => `$${value}`}
         />
         <Tooltip content={<CustomTooltip />} />
         <Line

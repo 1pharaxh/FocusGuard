@@ -8,43 +8,43 @@ import {
 } from "recharts";
 const data = [
   {
-    revenue: 10400,
-    name: "Jan",
+    blocked: 12,
+    name: "1pm",
     subscription: 240,
   },
   {
-    revenue: 14405,
-    name: "Feb",
+    blocked: 32,
+    name: "2pm",
     subscription: 300,
   },
   {
-    revenue: 9400,
-    name: "Mar",
+    blocked: 2,
+    name: "2:30pm",
     subscription: 200,
   },
   {
-    revenue: 8200,
-    name: "Apr",
+    blocked: 10,
+    name: "4pm",
     subscription: 278,
   },
   {
-    revenue: 7000,
-    name: "May",
+    blocked: 2,
+    name: "4:15pm",
     subscription: 189,
   },
   {
-    revenue: 9600,
-    name: "Jun",
+    blocked: 5,
+    name: "5pm",
     subscription: 239,
   },
   {
-    revenue: 11244,
-    name: "Jul",
+    blocked: 54,
+    name: "6pm",
     subscription: 278,
   },
   {
-    revenue: 26475,
-    name: "Aug",
+    blocked: 2,
+    name: "7pm",
     subscription: 189,
   },
 ];
@@ -64,7 +64,7 @@ export function AnalyticsLineGraph() {
         <Line
           type="monotone"
           strokeWidth={2}
-          dataKey="revenue"
+          dataKey="blocked"
           activeDot={{
             r: 6,
             style: {
@@ -91,7 +91,7 @@ export function AnalyticsLineGraph() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          // tickFormatter={(value) => `$${value}`}
         />
         <Tooltip
           cursor={{ fill: "transparent" }}
@@ -105,6 +105,7 @@ export function AnalyticsLineGraph() {
           itemStyle={{
             color: "#659D0A",
           }}
+          formatter={(value) => value}
           labelFormatter={(label) => ``}
         />
       </LineChart>

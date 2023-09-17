@@ -178,7 +178,7 @@ export default function Home() {
                         <CardContent>
                           <div className="text-2xl font-bold">+573</div>
                           <p className="text-xs text-muted-foreground">
-                            +201 since last hour
+                            Learn your daily tabs blocked
                           </p>
                           {userId && (
                             <OverviewTinyTabsBlockedChart userId={userId} />
@@ -222,7 +222,7 @@ export default function Home() {
                   lg:col-span-4"
                       >
                         <CardHeader>
-                          <CardTitle>Productivity Score</CardTitle>
+                          <CardTitle>Expanded Productivity Score</CardTitle>
                           <CardDescription>
                             Learn more about your productivity score.
                           </CardDescription>
@@ -249,9 +249,10 @@ export default function Home() {
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
                       <Card className="col-span-1">
                         <CardHeader>
-                          <CardTitle>Productivity Score</CardTitle>
+                          <CardTitle>Top Distractions</CardTitle>
                           <CardDescription>
-                            Learn more about your productivity score.
+                            Learn more about your top 3 distractions for each
+                            day.
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="pl-2">
@@ -261,9 +262,9 @@ export default function Home() {
                       <div className="col-span-1 flex flex-col gap-4">
                         <Card>
                           <CardHeader>
-                            <CardTitle>Productivity Score</CardTitle>
+                            <CardTitle>Daily Distractions</CardTitle>
                             <CardDescription>
-                              Learn more about your productivity score.
+                              Here are you daily distractions
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="pl-2">
@@ -275,7 +276,7 @@ export default function Home() {
                           <CardHeader>
                             <CardTitle>Productivity Score</CardTitle>
                             <CardDescription>
-                              Learn more about your productivity score.
+                              Number of allowed tabs vs blocked tabs
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="pl-2">
@@ -287,9 +288,9 @@ export default function Home() {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>Productivity Score</CardTitle>
+                        <CardTitle>History</CardTitle>
                         <CardDescription>
-                          Learn more about your productivity score.
+                          See more browser history details.
                         </CardDescription>
                       </CardHeader>
                       <CardContent>

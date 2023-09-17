@@ -11,72 +11,45 @@ import {
 
 const data = [
   {
-    name: "Jan",
-    total2: Math.floor(Math.random() * 5000) + 1000,
-    total: Math.floor(Math.random() * 5000) + 1000,
+    name: "Mon",
+    total2: Math.floor(Math.random() * 10) + 4,
+    total: Math.floor(Math.random() * 10) + 4,
   },
   {
-    name: "Feb",
-    total2: Math.floor(Math.random() * 5000) + 1000,
+    name: "Tue",
+    total2: Math.floor(Math.random() * 10) + 4,
 
-    total: Math.floor(Math.random() * 5000) + 1000,
+    total: Math.floor(Math.random() * 10) + 4,
   },
   {
-    name: "Mar",
-    total2: Math.floor(Math.random() * 5000) + 1000,
+    name: "Wed",
+    total2: Math.floor(Math.random() * 10) + 4,
 
-    total: Math.floor(Math.random() * 5000) + 1000,
+    total: Math.floor(Math.random() * 10) + 4,
   },
   {
-    name: "Apr",
-    total2: Math.floor(Math.random() * 5000) + 1000,
+    name: "Thu",
+    total2: Math.floor(Math.random() * 10) + 4,
 
-    total: Math.floor(Math.random() * 5000) + 1000,
+    total: Math.floor(Math.random() * 10) + 4,
   },
   {
-    name: "May",
-    total2: Math.floor(Math.random() * 5000) + 1000,
+    name: "Fri",
+    total2: Math.floor(Math.random() * 10) + 4,
 
-    total: Math.floor(Math.random() * 5000) + 1000,
+    total: Math.floor(Math.random() * 10) + 4,
   },
   {
-    name: "Jun",
-    total2: Math.floor(Math.random() * 5000) + 1000,
+    name: "Sat",
+    total2: Math.floor(Math.random() * 10) + 4,
 
-    total: Math.floor(Math.random() * 5000) + 1000,
+    total: Math.floor(Math.random() * 10) + 4,
   },
   {
-    name: "Jul",
-    total2: Math.floor(Math.random() * 5000) + 1000,
+    name: "Sun",
+    total2: Math.floor(Math.random() * 10) + 4,
 
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Aug",
-    total2: Math.floor(Math.random() * 5000) + 1000,
-
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Sep",
-    total2: Math.floor(Math.random() * 5000) + 1000,
-
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Oct",
-    total2: Math.floor(Math.random() * 5000) + 1000,
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Nov",
-    total2: Math.floor(Math.random() * 5000) + 1000,
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Dec",
-    total2: Math.floor(Math.random() * 5000) + 1000,
-    total: Math.floor(Math.random() * 5000) + 1000,
+    total: Math.floor(Math.random() * 10) + 4,
   },
 ];
 
@@ -114,8 +87,10 @@ export function AnalyticsStackedGraph() {
             borderRadius: "8px",
             zIndex: 9999,
           }}
-          formatter={(value) => [`$${value}`, "Total"]}
-          labelFormatter={(label) => `Month of ${label}`}
+          formatter={(value, name) => {
+            return [value, name === "total" ? "Allowed" : "Blocked"];
+          }}
+          labelFormatter={(label) => `Day: ${label}`}
         />
       </BarChart>
     </ResponsiveContainer>
