@@ -71,6 +71,43 @@ const data: Payment[] = [
     status: "failed",
     email: "carmella@hotmail.com",
   },
+  {
+    id: "bhqecjd4p",
+    amount: 721,
+    status: "success",
+    email: "sasd@hotmail.com",
+  },
+  {
+    id: "bhqe222cjd4p",
+    amount: 721,
+    status: "success",
+    email: "sasd@hotmail.com",
+  },
+
+  {
+    id: "bhqe21222cjd4p",
+    amount: 221,
+    status: "success",
+    email: "sasd@hotmail.com",
+  },
+  {
+    id: "bh2qecjd4p",
+    amount: 721,
+    status: "success",
+    email: "sasd@hotmail.com",
+  },
+  {
+    id: "bhq21ecjd4p",
+    amount: 721,
+    status: "success",
+    email: "sasd@hotmail.com",
+  },
+  {
+    id: "b21hqecjd4p",
+    amount: 721,
+    status: "success",
+    email: "sasd@hotmail.com",
+  },
 ];
 
 export type Payment = {
