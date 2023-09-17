@@ -45,7 +45,7 @@ function checkLoginStatus() {
             .then((response) => response.json())
             .then((data) => {
               console.log("GOT BACK DATA", data);
-              if (data.category !== "Others") {
+              if (data.hasCategory !== "Others") {
                 // Hide all content on the current page
                 document.body.style.display = "none";
                 // Redirect to a link
