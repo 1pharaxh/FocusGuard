@@ -64,7 +64,14 @@ export default function Home() {
         via-violet-500
         to-indigo-500 bg-clip-text font-bold text-transparent"
           >
-            Focus Guard blocked this page for {name}
+            Focus Guard blocked this page for
+            <span
+              className="from-violet-200 m-1
+        bg-gradient-to-br bg-clip-text font-bold text-transparent
+        to-violet-500 "
+            >
+              {name}
+            </span>
           </span>
 
           <div className="flex items-center justify-center space-x-4 mt-4">
