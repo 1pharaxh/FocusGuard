@@ -293,7 +293,7 @@ export default function Home() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <AnalyticsTable />
+                        {userId && <AnalyticsTable userId={userId} />}
                       </CardContent>
                     </Card>
                   </TabsContent>

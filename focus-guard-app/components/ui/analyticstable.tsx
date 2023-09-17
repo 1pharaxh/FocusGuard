@@ -43,9 +43,6 @@ import {
 const data: Payment[] = [
   {
     id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
 
     pageurl: "https://www.google.com",
     pagetitle: "Google",
@@ -178,9 +175,9 @@ const data: Payment[] = [
 
 export type Payment = {
   id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
+  amount?: number;
+  status?: "pending" | "processing" | "success" | "failed";
+  email?: string;
   pageurl?: string;
   pagetitle?: string;
   allowed?: string;
@@ -224,7 +221,9 @@ export const columns: ColumnDef<Payment>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("pagetitle")}</div>
+      <div className="lowercase w-[150px]  line-clamp-1">
+        {row.getValue("pagetitle")}
+      </div>
     ),
   },
 
@@ -232,14 +231,16 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "allowed",
     header: "Allowed",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("allowed")}</div>
+      <div className="capitalize  w-[50px]  line-clamp-1">
+        {row.getValue("allowed")}
+      </div>
     ),
   },
   {
     accessorKey: "pageurl",
     header: "URL",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("pageurl")}</div>
+      <div className=" w-[150px]  line-clamp-1">{row.getValue("pageurl")}</div>
     ),
   },
   {
@@ -286,17 +287,186 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export function AnalyticsTable() {
+export function AnalyticsTable({ userId }: { userId: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [dataTable, setdataTable] = React.useState<Payment[]>([
+    {
+      id: "m5gr84i9",
+
+      pageurl: "https://www.google.com",
+      pagetitle: "Google",
+      allowed: "Yes",
+      category: "Others",
+      date: "2021-09-01",
+    },
+    {
+      id: "3u1reuv4",
+      amount: 242,
+      status: "success",
+      email: "Abe45@gmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+    {
+      id: "derv1ws0",
+      amount: 837,
+      status: "processing",
+      email: "Monserrat44@gmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+    {
+      id: "5kma53ae",
+      amount: 874,
+      status: "success",
+      email: "Silas22@gmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+    {
+      id: "bhqecj4p",
+      amount: 721,
+      status: "failed",
+      email: "carmella@hotmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+    {
+      id: "bhqecjd4p",
+      amount: 721,
+      status: "success",
+      email: "sasd@hotmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+    {
+      id: "bhqe222cjd4p",
+      amount: 721,
+      status: "success",
+      email: "sasd@hotmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+
+    {
+      id: "bhqe21222cjd4p",
+      amount: 221,
+      status: "success",
+      email: "sasd@hotmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+    {
+      id: "bh2qecjd4p",
+      amount: 721,
+      status: "success",
+      email: "sasd@hotmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+    {
+      id: "bhq21ecjd4p",
+      amount: 721,
+      status: "success",
+      email: "sasd@hotmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+    {
+      id: "b21hqecjd4p",
+      amount: 721,
+      status: "success",
+      email: "sasd@hotmail.com",
+
+      pageurl: "https://www.acme.com",
+      pagetitle: "Your daily politics | Acme",
+      allowed: "No",
+      category: "Politics",
+      date: "2021-09-01",
+    },
+  ]);
+  const fetchTableData = async () => {
+    if (userId) {
+      try {
+        const res = await fetch(`/api/getTable`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ extension_user_id: userId }),
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        if (data) {
+          console.log("GOT TABLE DATA", data);
+          const tableData = data.table.map((row: any) => {
+            return {
+              id: row._id,
+              pageurl: row.url,
+              pagetitle: row.page_title,
+              allowed: row.allowed === true ? "Yes" : "No",
+              category: row.category,
+              date: new Date(row.date).toLocaleDateString("en-CA"),
+            };
+          });
+          setdataTable(tableData);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    }
+  };
+  React.useEffect(() => {
+    fetchTableData();
+  }, [userId]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: dataTable,
+    // data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

@@ -12,6 +12,7 @@ export default authMiddleware({
     "/api/checkCategory",
     "/api/viewEditCategory",
     "api/productivityScore",
+    "api/getTable",
   ],
 });
 
