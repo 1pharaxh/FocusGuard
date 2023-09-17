@@ -104,7 +104,9 @@ export async function EditCategories(userId: any, categories: string[]) {
   const doc = await collection.findOne();
   const AllCategories = doc?.AllCategories;
   let CurrentCategories = categories;
-  CurrentCategories.push("Others");
+  if (categories.length === 0) {
+    CurrentCategories = ["Others"];
+  }
   const Others = AllCategories?.filter(
     (category: string) => !CurrentCategories.includes(category)
   );

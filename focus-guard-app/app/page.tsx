@@ -345,7 +345,7 @@ export default function Home() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <RecentSales />
+                      {userId && <RecentSales userId={userId} />}
                     </CardContent>
                   </Card>
                 </div>
