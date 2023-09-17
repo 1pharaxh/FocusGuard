@@ -82,7 +82,7 @@ export async function CheckIfCollectionExists(userId: any) {
 
 export async function EditCategories(userId: any, categories: string[]) {
   const collection = await CheckIfCollectionExists(userId);
-  // AllCategories would get the new categoreis appened to it AND categoreis would be set to the new categories AND Others would be pushed to the end
+  // AllCategories would get the new categories appended to it AND categories would be set to the new categories AND Others would be pushed to the end
   const doc = await collection.findOne();
   const AllCategories = doc?.AllCategories;
   let CurrentCategories = categories;
@@ -98,8 +98,10 @@ export async function EditCategories(userId: any, categories: string[]) {
     AllCategories: newCategories,
     updatedOn: new Date(),
   };
-  // Add the document to the collection
-  await collection.insertOne(document);
+
+  // Replace the existing document
+  await collection.updateOne({ userId: userId }, { $set: document });
+
   return document;
 }
 

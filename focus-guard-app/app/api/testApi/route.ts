@@ -16,9 +16,9 @@ export const POST = async (req: Request, res: Response) => {
   //   "Other",
   // ]);
   // console.log(body.page_title + "-", category);
-  EditCategories(body.extension_user_id, ["Gaming"]);
 
   CheckIfCollectionExists(body.extension_user_id);
+  EditCategories(body.extension_user_id, ["Politcal News"]);
 
   const category = await AddToDatabase(
     body.extension_user_id,
