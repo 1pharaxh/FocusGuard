@@ -120,19 +120,21 @@ export async function AddToDatabase(
     .limit(1)
     .toArray();
 
+  const doc_template: any = await collection.findOne({});
+
   // If the document is found
   if (doc.length > 0) {
     console.log(doc);
     console.log("Document found");
 
     // Compare the 'CurrentCategories' from the document with the 'categories' array
-    const match = doc.CurrentCategories.some((category: any) =>
+    const match = doc_template.CurrentCategories.some((category: any) =>
       categories.includes(category)
     );
     // If a match is found, return 'BLOCK', else return 'ALLOW'
     return match ? "BLOCK" : "ALLOW";
   } else {
-    const categories = doc.CurrentCategories;
+    const categories = doc_template.CurrentCategories;
     const category = await SendToAI(page_title, categories);
     AddDataToDocument(
       userId,
