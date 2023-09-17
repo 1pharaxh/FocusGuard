@@ -140,8 +140,8 @@ export async function AddDataToDocument(
     url: url,
   };
 
-  // add the document to the collection
-  collection.insertOne(document);
+  // add the document to the collection and wait for it to finish
+  await collection.insertOne(document);
 }
 
 // This is function that accepts, userId: a string, page_title: a string, and URL: a string
@@ -155,8 +155,9 @@ export async function AddToDatabase(
 ): Promise<string> {
   const collection = await CheckIfCollectionExists(userId);
   // Find the document with the given url,  sort it by latest date, and limit it to 1
-  const doc: any = await collection
-    .find({ url: url })
+  // Check if the data already exists in the database
+  const existingDoc: any = await collection
+    .find({ url: url, page_title: page_title })
     .sort({ date: -1 })
     .limit(1)
     .toArray();
@@ -166,20 +167,20 @@ export async function AddToDatabase(
     AllCategories: { $exists: true },
   });
   // If the document is found
-  if (doc.length > 0) {
+  if (existingDoc.length > 0) {
     console.log("MESSAGE: found document");
     // If the document has the category in the current categories, then return the category
-    if (doc_template.CurrentCategories.includes(doc[0].category)) {
+    if (doc_template.CurrentCategories.includes(existingDoc[0].category)) {
       console.log(
         "MESSAGE: found document CATEGORY, RETURNING ",
-        doc[0].category
+        existingDoc[0].category
       );
-      return doc[0].category;
+      return existingDoc[0].category;
     } else {
       console.log(
         "MESSAGE: DID NOT FIND document CATEGORY -",
         doc_template.CurrentCategories,
-        doc[0].category
+        existingDoc[0].category
       );
       const categories = doc_template.CurrentCategories;
       const category = await SendToAI(page_title, categories);
