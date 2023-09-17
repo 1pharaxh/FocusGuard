@@ -23,7 +23,10 @@ export async function connectToDatabase() {
 }
 
 // This is the function that gets a string and returns the category of the string
-export async function SendToAI(text: String, categories: String[]) {
+export async function SendToAI(
+  text: String,
+  categories: String[]
+): Promise<string> {
   const openai = new OpenAI({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // This is also the default, can be omitted
   });
@@ -43,45 +46,73 @@ export async function SendToAI(text: String, categories: String[]) {
       },
     ],
   });
-  return chatCompletion.choices[0].message.content;
+  return chatCompletion.choices[0].message.content !== null
+    ? chatCompletion.choices[0].message.content
+    : "Others";
+}
+
+// Responsible for checking if collection of user Id exists, if it does, then reutnr collection else create collection and return the new one
+export async function CheckIfCollectionExists(userId: any) {
+  const db = await connectToDatabase();
+  const database = db.db("data");
+  // find a collection of userId, // if it does not exists, then create it, else return
+  const collection = database.collection(userId);
+  // check if collection has any document in it
+  const doc = await collection.findOne();
+  if (doc) {
+    console.log("Collection exists");
+    return collection;
+  } else {
+    // create a collection
+    database.createCollection(userId);
+    const document = {
+      userId: userId,
+      CurrentCategories: ["Others"],
+      AllCategories: ["Others"],
+      updatedOn: new Date(),
+    };
+    // add the document to the collection
+    const collectionNew = database.collection(userId);
+    collectionNew.insertOne(document);
+    return collectionNew;
+  }
 }
 
 // This is function that accepts, userId: a string, page_title: a string, category: a list of strings
 export async function AddToDatabase(
-  userId: string,
+  userId: any,
   page_title: string,
+  url: string,
   categories: string[]
-) {
-  // go into database "data"
-  const db = await connectToDatabase();
-  const database = db.db("data");
-  // find a collection that is userId
-  const collection = database.collection(userId);
-  // check if collection exists
-  const exsits = await collection.findOne({ userId: userId });
-  if (exsits) {
-    // check for the page_title and get the recent most documents with page_title
-    // if page title don't exist, add it to database, follow the steps
-    //          1. get the category from AI
-    //          2. if the category is Others, add a key value pair allowed: true, else add allowed: false
-    //          3. add a date key value pair, for sorting the query by latest date
-    //          4. add a key value pair page_title: page_title
-    //          5. add a key value pair categories: categories
-    //          6. add a key value pair category : category
-    //          7. add a key value pair userId: userId
+): Promise<string> {
+  const collection = await CheckIfCollectionExists(userId);
+  // find the page title document sort by date, get the latest one
+  // Find the document with the given page title, sorted by date
+  const doc: any = collection
+    .find({ page_title: page_title })
+    .sort({ date: -1 })
+    .limit(1)
+    .toArray();
+  // If the document is found
+  if (doc) {
+    // Compare the 'CurrentCategories' from the document with the 'categories' array
+    const match = doc.CurrentCategories.some((category: any) =>
+      categories.includes(category)
+    );
+    // If a match is found, return 'BLOCK', else return 'ALLOW'
+    return match ? "BLOCK" : "ALLOW";
   } else {
-    // if it does not exist, create a new collection
-    //          1. create a new collection with userId
-
-    //          2. add a document to it
-    //          1. get the category from AI
-    //          2. if the category is Others, add a key value pair allowed: true, else add allowed: false
-    //          3. add a date key value pair, for sorting the query by latest date
-    //          4. add a key value pair page_title: page_title
-    //          5. add a key value pair categories: categories
-    //          6. add a key value pair category : category
-    //          7. add a key value pair userId: userId
-    console.log("Collection does not exist");
+    const categories = doc.CurrentCategories;
+    const category = await SendToAI(page_title, categories);
+    AddDataToDocument(
+      userId,
+      page_title,
+      categories,
+      url,
+      category,
+      collection
+    );
+    return category === "Others" ? "ALLOW" : "BLOCK";
   }
 }
 
@@ -90,12 +121,9 @@ export async function AddDataToDocument(
   page_title: string,
   categories: string[],
   url: string,
-  category: string
+  category: string,
+  collection: any
 ) {
-  const db = await connectToDatabase();
-  const database = db.db("data");
-  const collection = database.collection(userId);
-  // construct the document
   const document = {
     allowed: category === "Others" ? true : false,
     date: new Date(),

@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { connectToDatabase, SendToAI, AddToDatabase } from "@/lib";
+import {
+  connectToDatabase,
+  SendToAI,
+  AddToDatabase,
+  CheckIfCollectionExists,
+} from "@/lib";
 // IMPORTANT: THIS IS HOW YOU MAKE AN API : https://www.youtube.com/watch?v=O-NGENb6LNg
 export const GET = async (req: Request, res: Response) => {
   return NextResponse.json({ message: "Hello from the API!" });
@@ -16,12 +21,13 @@ export const POST = async (req: Request, res: Response) => {
   //   "Other",
   // ]);
   // console.log(body.page_title + "-", category);
-  const category = "Other";
-  AddToDatabase(
-    "IAMANID",
-    "10000 KILL SQUAD WIPED TWIN TOWER FORTNITE MONTAGE EPIC 2021 KILLS | SUICDE SQUAD | CASTORS CURSE",
-    ["Gaming", "Others", "Political News", "United Kingdom", "Canada", "USA"]
-  );
+  CheckIfCollectionExists(body.extension_user_id);
 
+  const category = await AddToDatabase(
+    body.extension_user_id,
+    body.page_title,
+    body.page_url,
+    ["Gaming", "Politcal News", "Other"]
+  );
   return NextResponse.json({ category: category });
 };
