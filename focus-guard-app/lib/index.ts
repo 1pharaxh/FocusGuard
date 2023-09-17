@@ -266,3 +266,24 @@ export async function GetCurrentCategories(userId: string) {
     return [];
   }
 }
+// This function finds all the document for current user for given date and returns the documents in an array and also returns how many documents had
+// category as 'Others' and how many documents had category not as 'Others'
+export async function GetDocumentsForDate(userId: string, date: Date) {
+  const collection = await CheckIfCollectionExists(userId);
+  // get all documents IGNORE DATE FOR NOW
+  const documents = await collection.find().toArray();
+  console.log("GOT DOCUMENTS: ", documents);
+  let others = 0;
+  let notOthers = 0;
+  documents.forEach((document) => {
+    if (document.category === "Others") {
+      others++;
+    } else {
+      notOthers++;
+    }
+  });
+  return {
+    others: others,
+    notOthers: notOthers,
+  };
+}

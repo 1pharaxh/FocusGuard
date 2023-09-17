@@ -2,17 +2,6 @@
 import { useAuth } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "@radix-ui/react-icons";
-
-import {
-  Bar,
-  BarChart,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
 import {
   Card,
   CardContent,
@@ -21,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Overview } from "@/components/ui/overview";
+import { OverviewProductivityBigChart } from "@/components/ui/overviewproductivityscorebigchart";
 import { RecentSales } from "@/components/ui/recent-sales";
 import { AnalyticsTLineGraph } from "@/components/ui/analyticstlinegraph";
 import { AnalyticsStackedGraph } from "@/components/ui/analyticstackedgraph";
@@ -39,63 +28,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { OverviewTinyProductivityChart } from "@/components/ui/overviewtinyproductivitychart";
+import { OverviewTinyTabsBlockedChart } from "@/components/ui/overviewtinytablockchart";
+import { OverViewDistractionScoreChart } from "@/components/ui/overviewdistractionscorechart";
 
-import {
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-const Dialog = dynamic(
-  () => import("@/components/ui/dialog").then((mod) => mod.Dialog),
-  {
-    ssr: false,
-  }
-);
 const AlertDialog = dynamic(
   () => import("@/components/ui/alert-dialog").then((mod) => mod.AlertDialog),
   {
     ssr: false,
   }
 );
-const data = [
-  {
-    revenue: 10400,
-    subscription: 240,
-  },
-  {
-    revenue: 14405,
-    subscription: 300,
-  },
-  {
-    revenue: 9400,
-    subscription: 200,
-  },
-  {
-    revenue: 8200,
-    subscription: 278,
-  },
-  {
-    revenue: 7000,
-    subscription: 189,
-  },
-  {
-    revenue: 9600,
-    subscription: 239,
-  },
-  {
-    revenue: 11244,
-    subscription: 278,
-  },
-  {
-    revenue: 26475,
-    subscription: 189,
-  },
-];
+
 export default function Home() {
   const { isLoaded, userId } = useAuth();
   const { isSignedIn, user } = useUser();
@@ -206,55 +149,12 @@ export default function Home() {
                         <CardContent>
                           <div className="text-2xl font-bold">+2350</div>
                           <p className="text-xs text-muted-foreground">
-                            +180.1% from last month
+                            This score is the average of your last 7 days
+                            distraction score
                           </p>
-                          <div className="h-[80px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <LineChart
-                                data={data}
-                                margin={{
-                                  top: 5,
-                                  right: 10,
-                                  left: 10,
-                                  bottom: 0,
-                                }}
-                              >
-                                <Line
-                                  type="monotone"
-                                  strokeWidth={2}
-                                  dataKey="revenue"
-                                  activeDot={{
-                                    r: 6,
-                                    style: {
-                                      fill: "var(--theme-primary)",
-                                      opacity: 0.25,
-                                    },
-                                  }}
-                                  style={
-                                    {
-                                      stroke: "var(--theme-primary)",
-                                      "--theme-primary": "#adfa1d",
-                                    } as React.CSSProperties
-                                  }
-                                />
-                                <Tooltip
-                                  cursor={{ fill: "transparent" }}
-                                  contentStyle={{
-                                    backgroundColor: "#FEFEFE",
-                                    border: "none",
-                                    boxShadow:
-                                      "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                                    borderRadius: "8px",
-                                    zIndex: 9999,
-                                  }}
-                                  itemStyle={{
-                                    color: "#659D0A",
-                                  }}
-                                  labelFormatter={(label) => ``}
-                                />
-                              </LineChart>
-                            </ResponsiveContainer>
-                          </div>
+                          {userId && (
+                            <OverviewTinyProductivityChart userId={userId} />
+                          )}
                         </CardContent>
                       </Card>
                       <Card>
@@ -280,29 +180,9 @@ export default function Home() {
                           <p className="text-xs text-muted-foreground">
                             +201 since last hour
                           </p>
-                          <div className="mt-4 h-[80px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <BarChart data={data}>
-                                <Bar
-                                  dataKey="subscription"
-                                  fill="#000"
-                                  radius={[4, 4, 0, 0]}
-                                />
-                                <Tooltip
-                                  cursor={{ fill: "transparent" }}
-                                  contentStyle={{
-                                    backgroundColor: "#FEFEFE",
-                                    border: "none",
-                                    boxShadow:
-                                      "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                                    borderRadius: "8px",
-                                    zIndex: 9999,
-                                  }}
-                                  labelFormatter={(label) => ``}
-                                />
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </div>
+                          {userId && (
+                            <OverviewTinyTabsBlockedChart userId={userId} />
+                          )}
                         </CardContent>
                       </Card>
                       <Card>
@@ -329,6 +209,9 @@ export default function Home() {
                           <p className="text-xs text-muted-foreground">
                             +19% from last month
                           </p>
+                          {userId && (
+                            <OverViewDistractionScoreChart userId={userId} />
+                          )}
                         </CardContent>
                       </Card>
                     </div>
@@ -345,7 +228,9 @@ export default function Home() {
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="pl-2">
-                          <Overview />
+                          {userId && (
+                            <OverviewProductivityBigChart userId={userId} />
+                          )}
                         </CardContent>
                       </Card>
                       {userId && (
