@@ -24,7 +24,14 @@ export default function Page() {
             </span>
           </h2>
         </div>
-        <div className="col-span-1 h-screen flex justify-center items-center">
+        <div className="col-span-1 h-screen flex flex-col justify-center items-center">
+          <Image
+            className="object-cover rounded-lg"
+            alt="Focus Guard Logo Image"
+            src="/focusGuardLogo.png"
+            width={300}
+            height={300}
+          />
           <SignIn />
         </div>
       </div>
