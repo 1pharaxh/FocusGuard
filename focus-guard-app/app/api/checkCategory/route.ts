@@ -1,11 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  AddToDatabase,
-  EditCategories,
-  CheckIfCollectionExists,
-  GetData,
-  CheckIfCategoriesExist,
-} from "@/lib";
+import { CheckIfCategoriesExist } from "@/lib";
 // IMPORTANT: THIS IS HOW YOU MAKE AN API : https://www.youtube.com/watch?v=O-NGENb6LNg
 export const GET = async (req: Request, res: Response) => {
   return NextResponse.json({ message: "Hello from the API!" });

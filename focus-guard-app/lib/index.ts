@@ -1,7 +1,6 @@
 import OpenAI from "openai";
 
 import { MongoClient } from "mongodb";
-import { currentUser } from "@clerk/nextjs";
 
 const uri = process.env.NEXT_PUBLIC_MONGODB_URI; // Connection string from MongoDB Atlas
 
@@ -24,7 +23,7 @@ export async function connectToDatabase() {
 }
 let lastCall = 0;
 
-// DONE✅ This is the function that gets a string and returns the category of the string
+// DONE✅ This is the function that gets a string and returns the category of the string, accepts text and categories array
 export async function SendToAI(
   text: String,
   categories: String[]
