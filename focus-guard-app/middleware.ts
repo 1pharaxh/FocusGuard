@@ -14,6 +14,7 @@ export default authMiddleware({
     "api/productivityScore",
     "api/getTable",
   ],
+  ignoredRoutes: ["/((?!api|trpc))(_next|.+\..+)(.*)", "/api/productivityScore"]
 });
 
 export const config = {

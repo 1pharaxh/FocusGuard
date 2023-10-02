@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import {
-  EditCategories,
-  GetCurrentCategories,
-  GetDocumentsForDate,
+  getLastSevenDaysData,
 } from "@/lib";
 // IMPORTANT: THIS IS HOW YOU MAKE AN API : https://www.youtube.com/watch?v=O-NGENb6LNg
 export const GET = async (req: Request, res: Response) => {
@@ -15,11 +13,10 @@ export const POST = async (req: Request, res: Response) => {
     return NextResponse.json({ message: "no body!" });
   }
   const userId = body.extension_user_id;
-  const date = new Date(body.date);
-  const response = await GetDocumentsForDate(userId, date);
+  console.log("productivityScore Api", userId);
+  const response = await getLastSevenDaysData(userId);
   console.log("GOT CHART DATA: ", response);
   return NextResponse.json({
-    others: response.others, // allowed
-    notOthers: response.notOthers, // not allowed
+    response: response
   });
 };
