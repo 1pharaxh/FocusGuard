@@ -63,7 +63,10 @@ export function OverviewTinyProductivityChart({
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const dataa = await res.json();
-        if (dataa.productivityScore_Card && dataa.productivityScore_Expanded) {
+        if (
+          dataa.productivityScore_Card.length > 1 &&
+          dataa.productivityScore_Expanded > 1
+        ) {
           const setterData: Data[] = dataa.productivityScore_Card.map(
             (item: number) => {
               return {
@@ -81,8 +84,6 @@ export function OverviewTinyProductivityChart({
           setData(setterData);
           expandedProductivityScoreSetter(dataa.productivityScore_Expanded);
         }
-        setLoading(false);
-        setExpandedLoading(false);
       } catch (error) {
         console.error("Fetch error:", error);
       }
@@ -90,11 +91,13 @@ export function OverviewTinyProductivityChart({
   };
   useEffect(() => {
     fetchData();
+    setLoading(false);
+    setExpandedLoading(false);
   }, [userId]);
 
   return (
     <div className="h-[80px]">
-      {data && !loading && (
+      {data.length > 1 && !loading && (
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -141,7 +144,7 @@ export function OverviewTinyProductivityChart({
           </LineChart>
         </ResponsiveContainer>
       )}
-      {!data && !loading && (
+      {data.length < 1 && !loading && (
         <div className="relative h-full flex flex-col items-center justify-center">
           <div className="absolute flex flex-col items-center justify-center z-50">
             <LockClosedIcon className="w-8 h-8 text-slate-300" />

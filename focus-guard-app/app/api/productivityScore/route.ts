@@ -13,7 +13,8 @@ export const POST = async (req: Request, res: Response) => {
   const userId = body.extension_user_id;
   const productivityScore = await calculateProductivityScore(userId);
   return NextResponse.json({
-    productivityScore_Card: productivityScore?.productivityScore_Card,
-    productivityScore_Expanded: productivityScore?.productivityScore_Expanded,
+    productivityScore_Card: productivityScore?.productivityScore_Card || [],
+    productivityScore_Expanded:
+      productivityScore?.productivityScore_Expanded || [],
   });
 };

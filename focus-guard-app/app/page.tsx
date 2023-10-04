@@ -144,7 +144,11 @@ export default function Home() {
                       <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                           <CardTitle className="text-sm font-medium">
-                            Productivity Score
+                            {productivityScore ? (
+                              "Productivity Score"
+                            ) : (
+                              <Skeleton className=" w-[120px] h-3 mb-1" />
+                            )}
                           </CardTitle>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -166,12 +170,18 @@ export default function Home() {
                             {productivityScore ? (
                               "+ " + productivityScore
                             ) : (
-                              <Skeleton className=" w-[80px] h-5 mb-1" />
+                              <Skeleton className=" w-[50px] h-5 mb-1" />
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            This score is the average of your last 7 days
-                            distraction score
+                            {productivityScore ? (
+                              "This score is the average of your last 7 days distraction score"
+                            ) : (
+                              <div>
+                                <Skeleton className=" w-[290px] h-2 mb-1" />
+                                <Skeleton className=" w-[50px] h-2 mb-1" />
+                              </div>
+                            )}
                           </p>
                           {userId && (
                             <OverviewTinyProductivityChart
@@ -252,9 +262,20 @@ export default function Home() {
                         <CardHeader>
                           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <div>
-                              <CardTitle>Expanded Productivity Score</CardTitle>
+                              <CardTitle>
+                                {productivityScore ? (
+                                  "Expanded Productivity Score"
+                                ) : (
+                                  <Skeleton className=" w-[200px] h-5 my-1" />
+                                )}
+                              </CardTitle>
                               <CardDescription>
-                                Learn more about your productivity score.
+                                {/* Learn more about your productivity score. */}
+                                {productivityScore ? (
+                                  "Learn more about your productivity score."
+                                ) : (
+                                  <Skeleton className=" w-[130px] h-[0.9rem] my-1" />
+                                )}
                               </CardDescription>
                             </div>
 

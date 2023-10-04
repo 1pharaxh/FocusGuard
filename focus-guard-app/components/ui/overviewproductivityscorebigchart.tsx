@@ -67,7 +67,7 @@ export function OverviewProductivityBigChart({
   }
   return (
     <>
-      {data && !loader && (
+      {data.length > 1 && !loader && (
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={finalData}>
             <XAxis
@@ -105,7 +105,7 @@ export function OverviewProductivityBigChart({
         </ResponsiveContainer>
       )}
 
-      {!data && !loader && (
+      {data.length < 1 && !loader && (
         <div className="relative h-full flex flex-col items-center justify-center">
           <div className="absolute flex flex-col items-center justify-center z-50">
             <LockClosedIcon className="w-8 h-8 text-slate-300" />
