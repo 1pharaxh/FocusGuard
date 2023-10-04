@@ -286,45 +286,64 @@ export async function GetDocumentsForDate(userId: string, date: Date) {
   };
 }
 
-async function calculateProductivityScore(collection: any) {
-  let totalScore = 0;
-  let count = 0;
+export async function calculateProductivityScore(userId: string) {
+  const db = await connectToDatabase();
+  const database = db.db("data");
+  const collection = database.collection(userId);
+  try {
+    const productivityScores: { date: string; score: number }[] = [];
 
-  for (let i = 0; i < 7; i++) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-
-    // Query the collection for documents within the date range
-    const documents = await collection
-      .find({
-        date: {
-          $gte: new Date(date.setHours(0, 0, 0, 0)),
-          $lt: new Date(date.setHours(23, 59, 59, 999)),
+    let dates = await collection
+      .aggregate([
+        {
+          $group: {
+            _id: {
+              $dateToString: { format: "%Y-%m-%d", date: "$date" },
+            },
+          },
         },
-      })
-      .toArray();
-    console.log("documents", documents);
-    if (documents.length > 0) {
+      ])
+      .toArray(); // get all distinct dates
+
+    dates = dates.filter((date: any) => date._id !== null); // remove null dates
+
+    dates = dates.map((date: any) => ({ _id: new Date(date._id) })); // convert date strings to Date objects
+    dates.sort(
+      // @ts-ignore
+      (a: { _id: Date }, b: { _id: Date }) => a._id.getTime() - b._id.getTime()
+    ); // sort dates in ascending order
+
+    for (let i = 0; i < Math.min(7, dates.length); i++) {
+      const date = new Date(dates[i]._id);
+
+      // Query the collection for documents within the date range
+      const documents = await collection
+        .find({
+          date: {
+            $gte: new Date(date.setHours(0, 0, 0, 0)),
+            $lt: new Date(date.setHours(23, 59, 59, 999)),
+          },
+        })
+        .toArray();
+
       const totalTabs = documents.length;
       const otherTabs = documents.filter(
         (doc: any) => doc.category === "Others"
       ).length;
 
-      const score = otherTabs / totalTabs;
-      totalScore += score;
-      count++;
+      const score =
+        totalTabs > 0
+          ? (otherTabs / totalTabs) * 100 === 0
+            ? 100
+            : (otherTabs / totalTabs) * 100
+          : 0;
+      productivityScores.push({ date: dates[i]._id, score });
     }
-  }
 
-  return count > 0 ? totalScore / count : 0;
-}
-
-export async function getLastSevenDaysData(userId: any) {
-  const db = await connectToDatabase();
-  const database = db.db("data");
-  const collection = database.collection(userId);
-  try {
-    return calculateProductivityScore(collection);
+    return {
+      productivityScore_Card: productivityScores.map((item) => item.score),
+      productivityScore_Expanded: productivityScores,
+    };
   } catch (error) {
     console.error("Error occurred:", error);
   }

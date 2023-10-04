@@ -25,31 +25,32 @@ const demoData: Data[] = [
     productivityScore: 7,
   },
 ];
-const dataa: Data[] = [
-  {
-    productivityScore: 12,
-  },
-  {
-    productivityScore: 2,
-  },
-  {
-    productivityScore: 13,
-  },
-  {
-    productivityScore: 2,
-  },
-  {
-    productivityScore: 5,
-  },
-  {
-    productivityScore: 7,
-  },
-];
-export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
-  const [data, setData] = useState(dataa);
+
+type ProductivityScore = { score: number; date: string }[];
+
+export function OverviewTinyProductivityChart({
+  userId,
+  productivityScoreSetter,
+  expandedProductivityScoreSetter,
+  setExpandedLoading,
+}: {
+  userId: string;
+  productivityScoreSetter: React.Dispatch<React.SetStateAction<number>>;
+  expandedProductivityScoreSetter: React.Dispatch<
+    React.SetStateAction<ProductivityScore>
+  >;
+  setExpandedLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const [data, setData] = useState(
+    [] as {
+      productivityScore: number;
+    }[]
+  );
+  const [loading, setLoading] = useState(false);
   const fetchData = async () => {
     if (userId) {
       try {
+        setLoading(true);
         const res = await fetch(`/api/productivityScore`, {
           method: "POST",
           headers: {
@@ -61,15 +62,27 @@ export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
-        const data = await res.json();
-        if (data.others && data.notOthers) {
-          setData((prevData) => [
-            ...prevData,
-            {
-              productivityScore: data.others,
-            },
-          ]);
+        const dataa = await res.json();
+        if (dataa.productivityScore_Card && dataa.productivityScore_Expanded) {
+          const setterData: Data[] = dataa.productivityScore_Card.map(
+            (item: number) => {
+              return {
+                productivityScore: item,
+              };
+            }
+          );
+          // sum up datta.productivityScore_Card to productivityScoreSetter
+          productivityScoreSetter(
+            dataa.productivityScore_Card.reduce(
+              (a: number, b: number) => a + b,
+              0
+            )
+          );
+          setData(setterData);
+          expandedProductivityScoreSetter(dataa.productivityScore_Expanded);
         }
+        setLoading(false);
+        setExpandedLoading(false);
       } catch (error) {
         console.error("Fetch error:", error);
       }
@@ -81,7 +94,7 @@ export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
 
   return (
     <div className="h-[80px]">
-      {data.length > 2 ? (
+      {data && !loading && (
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -127,7 +140,8 @@ export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
             />
           </LineChart>
         </ResponsiveContainer>
-      ) : (
+      )}
+      {!data && !loading && (
         <div className="relative h-full flex flex-col items-center justify-center">
           <div className="absolute flex flex-col items-center justify-center z-50">
             <LockClosedIcon className="w-8 h-8 text-slate-300" />
@@ -183,6 +197,11 @@ export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
               </LineChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      )}
+      {loading && (
+        <div className="h-[80px] w-full flex items-center justify-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-5 border-b-2 border-[#adfa1d]"></div>
         </div>
       )}
     </div>

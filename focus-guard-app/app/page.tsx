@@ -40,6 +40,7 @@ import {
   TooltipTrigger,
   TooltipArrow,
 } from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const AlertDialog = dynamic(
   () => import("@/components/ui/alert-dialog").then((mod) => mod.AlertDialog),
@@ -52,6 +53,11 @@ export default function Home() {
   const { isLoaded, userId } = useAuth();
   const { isSignedIn, user } = useUser();
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const [productivityScore, setProductivityScore] = React.useState(0);
+  const [expandedProductivityScore, setExpandedProductivityScore] =
+    React.useState([] as { score: number; date: string }[]);
+  const [expandedLoading, setExpandedLoading] = React.useState(true);
 
   const fetchData = async () => {
     if (isLoaded && userId && isSignedIn) {
@@ -156,13 +162,26 @@ export default function Home() {
                           </svg>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold">+2350</div>
+                          <div className="text-2xl font-bold">
+                            {productivityScore ? (
+                              "+ " + productivityScore
+                            ) : (
+                              <Skeleton className=" w-[80px] h-5 mb-1" />
+                            )}
+                          </div>
                           <p className="text-xs text-muted-foreground">
                             This score is the average of your last 7 days
                             distraction score
                           </p>
                           {userId && (
-                            <OverviewTinyProductivityChart userId={userId} />
+                            <OverviewTinyProductivityChart
+                              setExpandedLoading={setExpandedLoading}
+                              productivityScoreSetter={setProductivityScore}
+                              expandedProductivityScoreSetter={
+                                setExpandedProductivityScore
+                              }
+                              userId={userId}
+                            />
                           )}
                         </CardContent>
                       </Card>
@@ -260,7 +279,10 @@ export default function Home() {
                         </CardHeader>
                         <CardContent className="pl-2">
                           {userId && (
-                            <OverviewProductivityBigChart userId={userId} />
+                            <OverviewProductivityBigChart
+                              data={expandedProductivityScore}
+                              loading={expandedLoading}
+                            />
                           )}
                         </CardContent>
                       </Card>
