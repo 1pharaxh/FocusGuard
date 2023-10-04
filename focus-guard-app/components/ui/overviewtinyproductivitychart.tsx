@@ -65,7 +65,7 @@ export function OverviewTinyProductivityChart({
         const dataa = await res.json();
         if (
           dataa.productivityScore_Card.length > 1 &&
-          dataa.productivityScore_Expanded > 1
+          dataa.productivityScore_Expanded.length > 1
         ) {
           const setterData: Data[] = dataa.productivityScore_Card.map(
             (item: number) => {
@@ -90,9 +90,10 @@ export function OverviewTinyProductivityChart({
     }
   };
   useEffect(() => {
-    fetchData();
-    setLoading(false);
-    setExpandedLoading(false);
+    fetchData().then(() => {
+      setLoading(false);
+      setExpandedLoading(false);
+    });
   }, [userId]);
 
   return (
