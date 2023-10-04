@@ -27,7 +27,7 @@ import React from "react";
 import { Button } from "./button";
 import { InfoCircledIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import dynamic from "next/dynamic";
-export function RecentSales({ userId }: { userId: string }) {
+export function AddCategoryCard({ userId }: { userId: string }) {
   const [categories, setCategories]: any = React.useState([]);
   const [error, setError] = React.useState("");
   const addCategory = async (category: string) => {

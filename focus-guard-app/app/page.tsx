@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OverviewProductivityBigChart } from "@/components/ui/overviewproductivityscorebigchart";
-import { RecentSales } from "@/components/ui/recent-sales";
+import { AddCategoryCard } from "@/components/ui/add-category-card";
 import { AnalyticsTLineGraph } from "@/components/ui/analyticstlinegraph";
 import { AnalyticsStackedGraph } from "@/components/ui/analyticstackedgraph";
 import { AnalyticsLineGraph } from "@/components/ui/analyticslinegraph";
@@ -265,12 +265,8 @@ export default function Home() {
                         </CardContent>
                       </Card>
                       {userId && (
-                        <Card
-                          className="
-                   md:col-span-1
-                  lg:col-span-3"
-                        >
-                          <RecentSales userId={userId} />
+                        <Card className=" md:col-span-1 lg:col-span-3">
+                          <AddCategoryCard userId={userId} />
                         </Card>
                       )}
                     </div>

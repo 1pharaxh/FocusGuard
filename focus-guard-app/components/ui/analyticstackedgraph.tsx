@@ -8,8 +8,12 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-
-const data = [
+interface Data {
+  name: string;
+  total: number;
+  total2: number;
+}
+const data: Data[] = [
   {
     name: "Mon",
     total2: Math.floor(Math.random() * 10) + 4,
@@ -54,6 +58,12 @@ const data = [
 ];
 
 export function AnalyticsStackedGraph() {
+  if (data.length === 0)
+    return (
+      <div>
+        <p>No data</p>
+      </div>
+    );
   return (
     <ResponsiveContainer width="100%" height={110}>
       <BarChart data={data}>

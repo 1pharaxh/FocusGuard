@@ -1,27 +1,52 @@
+import { LockClosedIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip } from "recharts";
+
+interface Data {
+  productivityScore: number;
+}
+const demoData: Data[] = [
+  {
+    productivityScore: 12,
+  },
+  {
+    productivityScore: 2,
+  },
+  {
+    productivityScore: 13,
+  },
+  {
+    productivityScore: 2,
+  },
+  {
+    productivityScore: 5,
+  },
+  {
+    productivityScore: 7,
+  },
+];
+const dataa: Data[] = [
+  {
+    productivityScore: 12,
+  },
+  {
+    productivityScore: 2,
+  },
+  {
+    productivityScore: 13,
+  },
+  {
+    productivityScore: 2,
+  },
+  {
+    productivityScore: 5,
+  },
+  {
+    productivityScore: 7,
+  },
+];
 export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
-  const [data, setData] = useState([
-    {
-      productivityScore: 12,
-    },
-    {
-      productivityScore: 2,
-    },
-    {
-      productivityScore: 13,
-    },
-    {
-      productivityScore: 2,
-    },
-    {
-      productivityScore: 5,
-    },
-    {
-      productivityScore: 7,
-    },
-    // Add a new data point from api here
-  ]);
+  const [data, setData] = useState(dataa);
   const fetchData = async () => {
     if (userId) {
       try {
@@ -56,51 +81,110 @@ export function OverviewTinyProductivityChart({ userId }: { userId: string }) {
 
   return (
     <div className="h-[80px]">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={data}
-          margin={{
-            top: 5,
-            right: 10,
-            left: 10,
-            bottom: 0,
-          }}
-        >
-          <Line
-            type="monotone"
-            strokeWidth={2}
-            dataKey="productivityScore"
-            activeDot={{
-              r: 6,
-              style: {
-                fill: "var(--theme-primary)",
-                opacity: 0.25,
-              },
+      {data.length > 2 ? (
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={data}
+            margin={{
+              top: 5,
+              right: 10,
+              left: 10,
+              bottom: 0,
             }}
-            style={
-              {
-                stroke: "var(--theme-primary)",
-                "--theme-primary": "#adfa1d",
-              } as React.CSSProperties
-            }
-          />
-          <Tooltip
-            cursor={{ fill: "transparent" }}
-            contentStyle={{
-              backgroundColor: "#FEFEFE",
-              border: "none",
-              boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-              borderRadius: "8px",
-              zIndex: 9999,
-            }}
-            itemStyle={{
-              color: "#659D0A",
-            }}
-            formatter={(value) => [`${value}`, "Points"]}
-            labelFormatter={(label) => ``}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+          >
+            <Line
+              type="monotone"
+              strokeWidth={2}
+              dataKey="productivityScore"
+              activeDot={{
+                r: 6,
+                style: {
+                  fill: "var(--theme-primary)",
+                  opacity: 0.25,
+                },
+              }}
+              style={
+                {
+                  stroke: "var(--theme-primary)",
+                  "--theme-primary": "#adfa1d",
+                } as React.CSSProperties
+              }
+            />
+            <Tooltip
+              cursor={{ fill: "transparent" }}
+              contentStyle={{
+                backgroundColor: "#FEFEFE",
+                border: "none",
+                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                borderRadius: "8px",
+                zIndex: 9999,
+              }}
+              itemStyle={{
+                color: "#659D0A",
+              }}
+              formatter={(value) => [`${value}`, "Points"]}
+              labelFormatter={(label) => ``}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      ) : (
+        <div className="relative h-full flex flex-col items-center justify-center">
+          <div className="absolute flex flex-col items-center justify-center z-50">
+            <LockClosedIcon className="w-8 h-8 text-slate-300" />
+            <p className="text-center text-muted-foreground text-sm mt-2">
+              Sorry we are still collecting data
+            </p>
+          </div>
+
+          <div className=" h-full blur-[3px] bg-slate-50 rounded-xl">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={demoData}
+                margin={{
+                  top: 5,
+                  right: 10,
+                  left: 10,
+                  bottom: 0,
+                }}
+              >
+                <Line
+                  type="monotone"
+                  strokeWidth={2}
+                  dataKey="productivityScore"
+                  activeDot={{
+                    r: 6,
+                    style: {
+                      fill: "var(--theme-primary)",
+                      opacity: 0.25,
+                    },
+                  }}
+                  style={
+                    {
+                      stroke: "var(--theme-primary)",
+                      "--theme-primary": "#adfa1d",
+                    } as React.CSSProperties
+                  }
+                />
+                <Tooltip
+                  cursor={{ fill: "transparent" }}
+                  contentStyle={{
+                    backgroundColor: "#FEFEFE",
+                    border: "none",
+                    boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                    borderRadius: "8px",
+                    zIndex: 9999,
+                  }}
+                  itemStyle={{
+                    color: "#659D0A",
+                  }}
+                  formatter={(value) => [`${value}`, "Points"]}
+                  labelFormatter={(label) => ``}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
