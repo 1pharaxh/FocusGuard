@@ -25,14 +25,25 @@ const Dialog = dynamic(
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import React from "react";
 import { Button } from "./button";
-import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import { InfoCircledIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import dynamic from "next/dynamic";
 export function RecentSales({ userId }: { userId: string }) {
   const [categories, setCategories]: any = React.useState([]);
-
+  const [error, setError] = React.useState("");
   const addCategory = async (category: string) => {
     // add the category to the array
-    const newCategories = [...categories, category];
+    // check if the category already exists
+    const formattedCategory = category.trim().toLowerCase();
+    if (
+      categories
+        .map((c: string) => c.trim().toLowerCase())
+        .includes(formattedCategory)
+    ) {
+      setError("Category already exists");
+      return;
+    }
+    setError("");
+    const newCategories = [...categories, formattedCategory];
     setCategories(newCategories);
 
     // send the new array to the server to update the database
@@ -62,8 +73,10 @@ export function RecentSales({ userId }: { userId: string }) {
     const input = document.getElementById("name") as HTMLInputElement;
     input.value = "";
     // close the dialog
-    const btn = document.getElementById("dialogtriggerBtn");
-    btn?.click();
+    if (error === "") {
+      const btn = document.getElementById("dialogtriggerBtn");
+      btn?.click();
+    }
   };
   const deleteCategory = async (category: string) => {
     // find the category in the array and remove it
@@ -146,6 +159,12 @@ export function RecentSales({ userId }: { userId: string }) {
               <Input id="name" className="col-span-3" />
             </div>
           </div>
+          {error !== "" && (
+            <div className="flex gap-1 items-center justify-start">
+              <InfoCircledIcon className="w-4 h-4 text-red-500 " />
+              <p className="text-sm text-red-500">{error}</p>
+            </div>
+          )}
           <DialogFooter>
             <Button
               onClick={() => {
