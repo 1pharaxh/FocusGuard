@@ -31,6 +31,15 @@ import {
 import { OverviewTinyProductivityChart } from "@/components/ui/overviewtinyproductivitychart";
 import { OverviewTinyTabsBlockedChart } from "@/components/ui/overviewtinytablockchart";
 import { OverViewDistractionScoreChart } from "@/components/ui/overviewdistractionscorechart";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipArrow,
+} from "@/components/ui/tooltip";
 
 const AlertDialog = dynamic(
   () => import("@/components/ui/alert-dialog").then((mod) => mod.AlertDialog),
@@ -223,25 +232,31 @@ export default function Home() {
                       >
                         <CardHeader>
                           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle>Expanded Productivity Score</CardTitle>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              className="h-4 w-4 text-muted-foreground"
-                            >
-                              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                              <circle cx="9" cy="7" r="4" />
-                              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                            </svg>
+                            <div>
+                              <CardTitle>Expanded Productivity Score</CardTitle>
+                              <CardDescription>
+                                Learn more about your productivity score.
+                              </CardDescription>
+                            </div>
+
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <InfoCircledIcon className="h-5 w-5 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent
+                                  side="left"
+                                  className="bg-black max-w-[150px] text-white rounded-md p-3 space-y-0"
+                                >
+                                  <TooltipArrow />
+                                  <p className="text-sm font-medium">
+                                    This chart shows your productivity score
+                                    every week with more data.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
-                          <CardDescription>
-                            Learn more about your productivity score.
-                          </CardDescription>
                         </CardHeader>
                         <CardContent className="pl-2">
                           {userId && (
