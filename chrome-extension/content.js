@@ -30,7 +30,7 @@ function checkLoginStatus() {
       chrome.storage.sync.get("extension_user_id", function (data) {
         if (data.extension_user_id) {
           // alert("Sending page info to server");
-          fetch("http://localhost:3000/api/testApi", {
+          fetch("http://localhost:3000/api/WebExtensionApi", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

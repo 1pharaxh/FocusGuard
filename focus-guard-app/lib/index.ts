@@ -287,24 +287,22 @@ export async function GetDocumentsForDate(userId: string, date: Date) {
   };
 }
 
-export async function getLastSevenDaysData(
-  userId:any
-) {
+export async function getLastSevenDaysData(userId: any) {
   const db = await connectToDatabase();
-  const database = db.db('data');
+  const database = db.db("data");
   const collection = database.collection(userId);
 
   try {
     let date = new Date();
     date.setDate(date.getDate() - 45); // 7 days ago
-    date.setHours(0,0,0,0);
+    date.setHours(0, 0, 0, 0);
 
     let docs = await collection.find({ date: { $gte: date } }).toArray();
 
-    let result:any = {};
+    let result: any = {};
 
     for (let doc of docs) {
-      let docDate = doc.date.toISOString().split('T')[0];
+      let docDate = doc.date.toISOString().split("T")[0];
       if (!result[docDate]) {
         result[docDate] = [];
       }
@@ -317,7 +315,6 @@ export async function getLastSevenDaysData(
     if (Object.keys(result).length > 1) {
       for (const datee in result) {
         if (result.hasOwnProperty(datee)) {
-          console.log(datee);
           for (let i = 0; i < result[datee].length; i++) {
             const doc = result[datee][i];
             // @ts-ignore
@@ -330,10 +327,9 @@ export async function getLastSevenDaysData(
       }
     }
 
-    let prodScore = productiveTabs/totalTabs*100;
+    let prodScore = (productiveTabs / totalTabs) * 100;
     return prodScore;
-
   } catch (error) {
-    console.error('Error occurred:', error);
+    console.error("Error occurred:", error);
   }
 }
