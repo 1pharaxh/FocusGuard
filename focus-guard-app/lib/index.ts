@@ -271,7 +271,6 @@ export async function GetDocumentsForDate(userId: string, date: Date) {
   const collection = await CheckIfCollectionExists(userId);
   // get all documents IGNORE DATE FOR NOW
   const documents = await collection.find().toArray();
-  console.log("GOT DOCUMENTS: ", documents);
   let others = 0;
   let notOthers = 0;
   documents.forEach((document) => {
@@ -287,48 +286,45 @@ export async function GetDocumentsForDate(userId: string, date: Date) {
   };
 }
 
+async function calculateProductivityScore(collection: any) {
+  let totalScore = 0;
+  let count = 0;
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+
+    // Query the collection for documents within the date range
+    const documents = await collection
+      .find({
+        date: {
+          $gte: new Date(date.setHours(0, 0, 0, 0)),
+          $lt: new Date(date.setHours(23, 59, 59, 999)),
+        },
+      })
+      .toArray();
+    console.log("documents", documents);
+    if (documents.length > 0) {
+      const totalTabs = documents.length;
+      const otherTabs = documents.filter(
+        (doc: any) => doc.category === "Others"
+      ).length;
+
+      const score = otherTabs / totalTabs;
+      totalScore += score;
+      count++;
+    }
+  }
+
+  return count > 0 ? totalScore / count : 0;
+}
+
 export async function getLastSevenDaysData(userId: any) {
   const db = await connectToDatabase();
   const database = db.db("data");
   const collection = database.collection(userId);
-
   try {
-    let date = new Date();
-    date.setDate(date.getDate() - 45); // 7 days ago
-    date.setHours(0, 0, 0, 0);
-
-    let docs = await collection.find({ date: { $gte: date } }).toArray();
-
-    let result: any = {};
-
-    for (let doc of docs) {
-      let docDate = doc.date.toISOString().split("T")[0];
-      if (!result[docDate]) {
-        result[docDate] = [];
-      }
-      result[docDate].push(doc);
-    }
-
-    let productiveTabs = 0;
-    let totalTabs = 0;
-
-    if (Object.keys(result).length > 1) {
-      for (const datee in result) {
-        if (result.hasOwnProperty(datee)) {
-          for (let i = 0; i < result[datee].length; i++) {
-            const doc = result[datee][i];
-            // @ts-ignore
-            if (doc.category === "Others") {
-              productiveTabs++;
-            }
-            totalTabs++;
-          }
-        }
-      }
-    }
-
-    let prodScore = (productiveTabs / totalTabs) * 100;
-    return prodScore;
+    return calculateProductivityScore(collection);
   } catch (error) {
     console.error("Error occurred:", error);
   }
