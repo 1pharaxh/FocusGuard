@@ -173,7 +173,7 @@ export default function Home() {
                               <Skeleton className=" w-[50px] h-5 mb-1" />
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground">
+                          <div className="text-xs text-muted-foreground">
                             {productivityScore ? (
                               "This score is the average of your last 7 days distraction score"
                             ) : (
@@ -182,7 +182,7 @@ export default function Home() {
                                 <Skeleton className=" w-[50px] h-2 mb-1" />
                               </div>
                             )}
-                          </p>
+                          </div>
                           {userId && (
                             <OverviewTinyProductivityChart
                               setExpandedLoading={setExpandedLoading}
@@ -262,21 +262,20 @@ export default function Home() {
                         <CardHeader>
                           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <div>
-                              <CardTitle>
-                                {productivityScore ? (
-                                  "Expanded Productivity Score"
-                                ) : (
-                                  <Skeleton className=" w-[200px] h-5 my-1" />
-                                )}
-                              </CardTitle>
-                              <CardDescription>
-                                {/* Learn more about your productivity score. */}
-                                {productivityScore ? (
-                                  "Learn more about your productivity score."
-                                ) : (
-                                  <Skeleton className=" w-[130px] h-[0.9rem] my-1" />
-                                )}
-                              </CardDescription>
+                              {productivityScore ? (
+                                <CardTitle>
+                                  Expanded Productivity Score
+                                </CardTitle>
+                              ) : (
+                                <Skeleton className=" w-[150px] h-5 my-1" />
+                              )}
+                              {productivityScore ? (
+                                <CardDescription>
+                                  Learn more about your productivity score.
+                                </CardDescription>
+                              ) : (
+                                <Skeleton className=" w-[130px] h-[0.9rem] my-1" />
+                              )}
                             </div>
 
                             <TooltipProvider>
