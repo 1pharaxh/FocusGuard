@@ -30,6 +30,7 @@ import dynamic from "next/dynamic";
 export function AddCategoryCard({ userId }: { userId: string }) {
   const [categories, setCategories]: any = React.useState([]);
   const [error, setError] = React.useState("");
+  const [updatedCategories, setUpdatedCategories] = React.useState("");
   const addCategory = async (category: string) => {
     // add the category to the array
     // check if the category already exists
@@ -45,7 +46,6 @@ export function AddCategoryCard({ userId }: { userId: string }) {
     setError("");
     const newCategories = [...categories, formattedCategory];
     setCategories(newCategories);
-
     // send the new array to the server to update the database
     try {
       const res = await fetch(`/api/viewEditCategory`, {
@@ -124,9 +124,17 @@ export function AddCategoryCard({ userId }: { userId: string }) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const data = await res.json();
-        console.log(data);
-        if (data.categories) {
-          console.log(data.categories);
+        if (data.categories && data.updateOn) {
+          // convert data.updateOn which is of string 2023-10-06T20:55:28.140Z to a date like
+          // Oct 6, 2023
+          const date = new Date(data.updateOn);
+          const options = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          } as const;
+          const formattedDate = date.toLocaleDateString("en-US", options);
+          setUpdatedCategories(formattedDate);
           setCategories(data.categories);
         }
       } catch (error) {
@@ -214,7 +222,7 @@ export function AddCategoryCard({ userId }: { userId: string }) {
                 <div className="ml-4 space-y-1">
                   <p className="text-sm font-medium leading-none">{category}</p>
                   <p className="text-sm text-muted-foreground">
-                    &middot; Added 3d ago{" "}
+                    &middot; Updated on {updatedCategories}
                   </p>
                 </div>
                 <Button
