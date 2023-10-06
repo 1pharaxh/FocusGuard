@@ -12,7 +12,6 @@ export const POST = async (req: Request, res: Response) => {
   }
   if (body.view === "get") {
     const returnData = await GetCurrentCategories(body.extension_user_id);
-    console.log("RETURNING CATEGORIES", returnData);
     if ("categories" in returnData && "updateOn" in returnData) {
       return NextResponse.json({
         categories: returnData.categories,

@@ -12,9 +12,19 @@ export default authMiddleware({
     "/api/checkCategory",
     "/api/viewEditCategory",
     "api/productivityScore",
+    "api/getBlockedCards",
     "api/getTable",
   ],
-  ignoredRoutes: ["/((?!api|trpc))(_next|.+..+)(.*)", "/api/productivityScore"],
+  ignoredRoutes: [
+    "/((?!api|trpc))(_next|.+..+)(.*)",
+    "/api/WebExtensionApi",
+    "/delete-user-key",
+    "/api/checkCategory",
+    "/api/viewEditCategory",
+    "api/productivityScore",
+    "api/getBlockedCards",
+    "api/getTable",
+  ],
 });
 
 export const config = {
