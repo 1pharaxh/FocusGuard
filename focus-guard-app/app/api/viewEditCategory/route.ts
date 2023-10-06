@@ -12,11 +12,19 @@ export const POST = async (req: Request, res: Response) => {
   }
   if (body.view === "get") {
     const returnData = await GetCurrentCategories(body.extension_user_id);
-    return NextResponse.json({ categories: returnData });
+    console.log("RETURNING CATEGORIES", returnData);
+    if ("categories" in returnData && "updateOn" in returnData) {
+      return NextResponse.json({
+        categories: returnData.categories,
+        updateOn: returnData.updateOn,
+      });
+    }
   } else if (body.view === "post") {
     console.log("POSTING TO EDIT CATEGORIES", body.categories);
-    const edit = await EditCategories(body.extension_user_id, body.categories);
+    await EditCategories(body.extension_user_id, body.categories);
     const returnData = await GetCurrentCategories(body.extension_user_id);
-    return NextResponse.json({ categories: returnData });
+    if ("categories" in returnData) {
+      return NextResponse.json({ categories: returnData.categories });
+    }
   }
 };

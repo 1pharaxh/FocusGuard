@@ -253,14 +253,16 @@ export async function CheckIfCategoriesExist(userId: string) {
 }
 
 // DONE✅ this function is responsbile for getting the current categories of a user
-export async function GetCurrentCategories(userId: string) {
+export async function GetCurrentCategories(
+  userId: string
+): Promise<{ categories: string[]; updateOn: Date } | []> {
   const collection = await CheckIfCollectionExists(userId);
   const doc = await collection.findOne({
     CurrentCategories: { $exists: true },
     AllCategories: { $exists: true },
   });
   if (doc && doc.CurrentCategories) {
-    return doc.CurrentCategories;
+    return { categories: doc.CurrentCategories, updateOn: doc.updatedOn };
   } else {
     return [];
   }
@@ -317,11 +319,15 @@ export async function calculateProductivityScore(userId: string) {
       const date = new Date(dates[i]._id);
 
       // Query the collection for documents within the date range
+      // gteDate should be todays date
+      new Date(date.setHours(0, 0, 0, 0));
+      new Date(date.setDate(date.getDate() + 1));
       const documents = await collection
         .find({
           date: {
             $gte: new Date(date.setHours(0, 0, 0, 0)),
-            $lt: new Date(date.setHours(23, 59, 59, 999)),
+            // add one day to the date
+            $lt: new Date(date.setDate(date.getDate() + 1)),
           },
         })
         .toArray();
@@ -331,15 +337,16 @@ export async function calculateProductivityScore(userId: string) {
         (doc: any) => doc.category === "Others"
       ).length;
 
-      const score =
+      let score =
         totalTabs > 0
           ? (otherTabs / totalTabs) * 100 === 0
             ? 100
             : (otherTabs / totalTabs) * 100
           : 0;
+
+      score = Math.round(score * 100) / 100;
       productivityScores.push({ date: dates[i]._id, score });
     }
-
     return {
       productivityScore_Card: productivityScores.map((item) => item.score),
       productivityScore_Expanded: productivityScores,
