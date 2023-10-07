@@ -11,9 +11,9 @@ export default authMiddleware({
     "/delete-user-key",
     "/api/checkCategory",
     "/api/viewEditCategory",
-    "api/productivityScore",
-    "api/getBlockedCards",
-    "api/getTable",
+    "/api/productivityScore",
+    "/api/getBlockedCards",
+    "/api/getTable",
   ],
   ignoredRoutes: [
     "/((?!api|trpc))(_next|.+..+)(.*)",
@@ -21,9 +21,9 @@ export default authMiddleware({
     "/delete-user-key",
     "/api/checkCategory",
     "/api/viewEditCategory",
-    "api/productivityScore",
-    "api/getBlockedCards",
-    "api/getTable",
+    "/api/productivityScore",
+    "/api/getBlockedCards",
+    "/api/getTable",
   ],
 });
 

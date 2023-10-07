@@ -15,6 +15,7 @@ export const POST = async (req: Request, res: Response) => {
     return NextResponse.json({ message: "no body!" });
   }
   const userId = body.extension_user_id;
+  console.log("userId", userId);
   const blockedTabs = await calculateTabsBlockedByDay(userId);
   return NextResponse.json({
     blockedTabs: blockedTabs?.blockedtabsList || [],
