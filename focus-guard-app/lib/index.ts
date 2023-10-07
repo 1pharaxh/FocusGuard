@@ -417,3 +417,70 @@ export async function calculateTabsBlockedByDay(userId: string) {
     console.error("Error occurred:", error);
   }
 }
+
+export async function calculateDistractionScore(userId: string) {
+  const db = await connectToDatabase();
+  const database = db.db("data");
+  const collection = database.collection(userId);
+  try {
+    const distractionScores: { date: string; score: number }[] = [];
+
+    let dates = await collection
+      .aggregate([
+        {
+          $group: {
+            _id: {
+              $dateToString: { format: "%Y-%m-%d", date: "$date" },
+            },
+          },
+        },
+      ])
+      .toArray(); // get all distinct dates
+
+    dates = dates.filter((date: any) => date._id !== null); // remove null dates
+
+    dates = dates.map((date: any) => ({ _id: new Date(date._id) })); // convert date strings to Date objects
+    dates.sort(
+      // @ts-ignore
+      (a: { _id: Date }, b: { _id: Date }) => a._id.getTime() - b._id.getTime()
+    ); // sort dates in ascending order
+
+    for (let i = 0; i < Math.min(7, dates.length); i++) {
+      const date = new Date(dates[i]._id);
+
+      // Query the collection for documents within the date range
+      // gteDate should be todays date
+      new Date(date.setHours(0, 0, 0, 0));
+      new Date(date.setDate(date.getDate() + 1));
+      const documents = await collection
+        .find({
+          date: {
+            $gte: new Date(date.setHours(0, 0, 0, 0)),
+            // add one day to the date
+            $lt: new Date(date.setDate(date.getDate() + 1)),
+          },
+        })
+        .toArray();
+
+      const totalTabs = documents.length;
+      const nonOtherTabs = documents.filter(
+        (doc: any) => doc.category !== "Others"
+      ).length;
+
+      let score =
+        totalTabs > 0
+          ? (nonOtherTabs / totalTabs) * 100 === 0
+            ? 100
+            : (nonOtherTabs / totalTabs) * 100
+          : 0;
+
+      score = Math.round(score * 100) / 100;
+      distractionScores.push({ date: dates[i]._id, score });
+    }
+    return {
+      distractionScores_Card: distractionScores.map((item) => item.score),
+    };
+  } catch (error) {
+    console.error("Error occurred:", error);
+  }
+}
