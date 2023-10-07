@@ -13,6 +13,7 @@ export default authMiddleware({
     "/api/viewEditCategory",
     "/api/productivityScore",
     "/api/getBlockedCards",
+    "/api/getDistractionScore",
     "/api/getTable",
   ],
   ignoredRoutes: [
@@ -23,6 +24,7 @@ export default authMiddleware({
     "/api/viewEditCategory",
     "/api/productivityScore",
     "/api/getBlockedCards",
+    "/api/getDistractionScore",
     "/api/getTable",
   ],
 });
